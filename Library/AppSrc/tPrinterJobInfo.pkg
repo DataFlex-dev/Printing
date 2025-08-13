@@ -1,0 +1,29 @@
+﻿Use tPrinterInfo_DevMode.pkg
+
+// Struct is not used in Windows API calls which makes the members DF members (so string instead of pointer)
+Struct tPrinterJobInfo
+    Integer eType
+    UInteger uiJobId
+    String sPrinterName
+    String sMachineName
+    String sUserName
+    String sDocument
+    String sNotifyName
+    String sDatatype
+    String[] sStatus
+    String sPrintProcessor
+    String sParameters
+    String sDriverName
+    tPrinterInfo_DevMode DevMode
+    Pointer pSecurityDescriptor
+    UInteger uiStatus
+    UInteger uiPriority
+    UInteger uiPosition
+    UInteger uiTotalPages
+    UInteger uiPagesPrinted
+    UInteger uiSize
+    UInteger uiStartTime
+    UInteger uiUntilTime
+    DateTime dtSubmitted
+    UInteger uiTime
+End_Struct

@@ -1,0 +1,17 @@
+﻿Use VdfBase.pkg
+
+Struct tWinDriver_Info_3
+    UInteger cVersion 
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment
+#ENDIF
+    Pointer pName
+    Pointer pEnvironment
+    Pointer pDriverPath
+    Pointer pDataFile
+    Pointer pConfigFile
+    Pointer pHelpFile
+    Pointer pDependentFiles
+    Pointer pMonitorName
+    Pointer pDefaultDataType
+End_Struct

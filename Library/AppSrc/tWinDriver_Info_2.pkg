@@ -1,0 +1,14 @@
+﻿Use VdfBase.pkg
+
+{ Name = WinDriver_Info_2 }
+Struct tWinDriver_Info_2
+    UInteger cVersion
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment
+#ENDIF
+    Pointer pName
+    Pointer pEnvironment
+    Pointer pDriverPath
+    Pointer pDataFile
+    Pointer pConfigFile
+End_Struct

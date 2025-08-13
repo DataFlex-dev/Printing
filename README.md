@@ -1,21 +1,28 @@
-# Library Template
+# Printing Library
+
+The printing library enables you to collect printer related information.
+
+The library contains the following classes:
+
+- cDefaultPrinter - Getting and setting (if allowed) of the current default printer
+- cDeviceCapabilities - Retrieves device capabilities. This class is used in the Printer Driver Analyzer tool cPrinterDriversHandler - Use this class to enumerate the available printer drivers
+- cPrinterFormsHandler - Use this class to enumerate the forms supported by a printer driver
+- cPrinterJobsHandler - Use this class to enumerate the jobs for a printer
+- cPrinterPortsHandler - Use this class to enumerate the printer ports
+- cPrintersHandler - Use this class to get the current status of a printer and to enumerate the listed Windows printers
+
+##### Note
+The [DateAndTime Library](https://github.com/DataFlex-dev/DateAndTime/) is needed to be able to use this library
 
 ---
 
 ## Library Information
 
-This repository is a template for developing DataFlex Libraries. The `Library` directory should contain the library, and the `Demo` directory should be a demo workspace that uses the library. (Optional) the `help` directory can be used for documentation and release notes.
+This repository contains a Library directory where the source for the Printing library is, and the Demo directory where you can find a demo workspace that uses the library.
 
-###### External Components
-
-If applicable, list the external components used in the table below:
-
-| Component | Version |
-| --------- | ------- |
-|           |         |
 
 ## General Information
 
 | Product  | Version           |
 | -------- | ----------------- |
-| DataFlex | 23.0, 24.0, 25.0  |
+| DataFlex | 25.0  |

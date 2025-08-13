@@ -1,0 +1,13 @@
+﻿// https://docs.microsoft.com/en-us/windows/win32/printdocs/printer-info-5
+
+{ Name = Printer_Info_5 }
+Struct tWinPrinter_Info_5
+    Pointer pPrinterName
+    Pointer pPortName
+    UInteger Attributes
+    UInteger DeviceNotSelectedTimeout
+    UInteger TransmissionRetryTimeout
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment
+#ENDIF
+End_Struct

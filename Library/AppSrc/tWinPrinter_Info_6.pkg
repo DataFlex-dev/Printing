@@ -1,0 +1,5 @@
+﻿// https://docs.microsoft.com/en-us/windows/win32/printdocs/printer-info-6
+
+{ Name = Printer_Info_6 }
+    UInteger dwStatus
+End_Struct

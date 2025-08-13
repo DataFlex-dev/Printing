@@ -1,0 +1,61 @@
+﻿Use tWinJob_Info_1.pkg
+Use tWinJob_Info_2.pkg
+Use tWinJob_Info_3.pkg
+Use tWinJob_Info_4.pkg
+Use tPrinterJobInfo.pkg
+
+// Constants for the status member
+Define JOB_STATUS_PAUSED            for |CI$00000001
+Define JOB_STATUS_ERROR             for |CI$00000002
+Define JOB_STATUS_DELETING          for |CI$00000004
+Define JOB_STATUS_SPOOLING          for |CI$00000008
+Define JOB_STATUS_PRINTING          for |CI$00000010
+Define JOB_STATUS_OFFLINE           for |CI$00000020
+Define JOB_STATUS_PAPEROUT          for |CI$00000040
+Define JOB_STATUS_PRINTED           for |CI$00000080
+Define JOB_STATUS_DELETED           for |CI$00000100
+Define JOB_STATUS_BLOCKED_DEVQ      for |CI$00000200
+Define JOB_STATUS_USER_INTERVENTION for |CI$00000400
+Define JOB_STATUS_RESTART           for |CI$00000800
+Define JOB_STATUS_COMPLETE          for |CI$00001000
+Define JOB_STATUS_RETAINED          for |CI$00002000
+Define JOB_STATUS_RENDERING_LOCALLY for |CI$00004000
+
+// Constants for the priority member below
+Define NO_PRIORITY  for 0
+Define MAX_PRIORITY for 99
+Define MIN_PRIORITY for 1
+Define DEF_PRIORITY for 1
+
+Define C_$JOB_STATUS_PAUSED            for "Job is paused"
+Define C_$JOB_STATUS_ERROR             for "An error is associated with the job"
+Define C_$JOB_STATUS_DELETING          for "Job is being deleted"
+Define C_$JOB_STATUS_SPOOLING          for "Job is spooling"
+Define C_$JOB_STATUS_PRINTING          for "Job is printing"
+Define C_$JOB_STATUS_OFFLINE           for "Printer is offline"
+Define C_$JOB_STATUS_PAPEROUT          for "Printer is out of paper"
+Define C_$JOB_STATUS_PRINTED           for "Job has printed"
+Define C_$JOB_STATUS_DELETED           for "Job has been deleted"
+Define C_$JOB_STATUS_BLOCKED_DEVQ      for "The driver cannot Print the job"
+Define C_$JOB_STATUS_USER_INTERVENTION for "Printer has an Error that requires the user to Do something"
+Define C_$JOB_STATUS_RESTART           for "Job has been restarted"
+Define C_$JOB_STATUS_COMPLETE          for "Job is sent to the printer, but the job may not be printed yet"
+Define C_$JOB_STATUS_RETAINED          for "Job has been retained in the print queue and cannot be deleted"
+Define C_$JOB_STATUS_RENDERING_LOCALLY for "Job is rendering locally"
+
+Define ERROR_INSUFFICIENT_BUFFER for |CI$7A // The data area passed to a system call is too small
+
+Define C_ENUMJOBS_TYPE_1 for 1 // tells EnumJobs to return tJob_Info_1 info
+Define C_ENUMJOBS_TYPE_2 for 2 // tells EnumJobs to return tJob_Info_2 info
+Define C_ENUMJOBS_TYPE_3 for 3 // tells EnumJobs to return tJob_Info_3 info
+
+External_Function WinAPI_EnumJobs "EnumJobsW" Winspool.drv ;
+    Handle hPrinter ;
+    UInteger uiFirstJob ;
+    UInteger uiNoJobs ;
+    UInteger uiLevel ;
+    Pointer pJob ;
+    UInteger cbBuf ;
+    Pointer pcbNeeded ;
+    Pointer pcReturned ;
+    Returns Boolean

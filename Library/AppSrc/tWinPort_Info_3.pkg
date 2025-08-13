@@ -1,0 +1,48 @@
+﻿// This port structure is not used with EnumPorts but with SetPort
+
+// Constants for the dwStatus member below
+Define PORT_STATUS_CLEAR             for  0 // Clears the printer port status.                    
+Define PORT_STATUS_OFFLINE           for  1 // The port's printer is offline.                     
+Define PORT_STATUS_PAPER_JAM         for  2 // The port's printer has a paper jam.                
+Define PORT_STATUS_PAPER_OUT         for  3 // The port's printer is out of paper.                
+Define PORT_STATUS_OUTPUT_BIN_FULL   for  4 // The port's printer's Output bin is full.           
+Define PORT_STATUS_PAPER_PROBLEM     for  5 // The port's printer has a paper problem.            
+Define PORT_STATUS_NO_TONER          for  6 // The port's printer is out of toner.                
+Define PORT_STATUS_DOOR_OPEN         for  7 // The door of the port's printer is open.            
+Define PORT_STATUS_USER_INTERVENTION for  8 // The port's printer requires user intervention.     
+Define PORT_STATUS_OUT_OF_MEMORY     for  9 // The port's printer is out of memory.               
+Define PORT_STATUS_TONER_LOW         for 10 // The port's printer is low on toner.                
+Define PORT_STATUS_WARMING_UP        for 11 // The port's printer is warming up.                  
+Define PORT_STATUS_POWER_SAVE        for 12 // The port's printer is in a power-conservation mode.
+
+// Constants for the dwSeverity member below
+Define PORT_STATUS_TYPE_ERROR   for 1
+Define PORT_STATUS_TYPE_WARNING for 2
+Define PORT_STATUS_TYPE_INFO    for 3
+
+{ Name = Port_Info_3 }
+Struct tWinPort_Info_3
+    UInteger dwStatus   // The new port status value. This value is used only if the pszStatus member is NULL.
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment
+#ENDIF
+    Pointer pszStatus   // Pointer to a new printer port status value string to set. Use this member if there is no suitable status value among those listed for dwStatus.
+    UInteger dwSeverity // The severity of the port status value.
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment2
+#ENDIF
+End_Struct
+
+
+
+
+
+
+
+
+
+
+
+
+
+

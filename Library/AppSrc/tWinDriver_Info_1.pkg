@@ -1,0 +1,6 @@
+﻿Use VdfBase.pkg
+Use tWinStructs.pkg
+
+Struct tWinDriver_Info_1
+    Pointer pName
+End_Struct

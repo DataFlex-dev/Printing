@@ -1,0 +1,28 @@
+Define PRINTER_ACCESS_ADMINISTER     for |CI$00000004
+Define PRINTER_ACCESS_USE            for |CI$00000008
+Define PRINTER_ACCESS_MANAGE_LIMITED for |CI$00000040
+
+//Define Delete                           (0x00010000L) // VO: Don't know a good name for this constant yet
+Define READ_CONTROL                     for |CI$00020000
+Define WRITE_DAC                        for |CI$00040000
+Define WRITE_OWNER                      for |CI$00080000
+Define SYNCHRONIZE                      for |CI$00100000
+Define STANDARD_RIGHTS_REQUIRED         for |CI$000F0000
+Define STANDARD_RIGHTS_READ             for READ_CONTROL
+Define STANDARD_RIGHTS_WRITE            for READ_CONTROL
+Define STANDARD_RIGHTS_EXECUTE          for READ_CONTROL
+Define STANDARD_RIGHTS_ALL              for |CI$001F0000
+Define SPECIFIC_RIGHTS_ALL              for |CI$0000FFFF
+
+// Access rights for printers
+Define PRINTER_ALL_ACCESS for (STANDARD_RIGHTS_REQUIRED ior PRINTER_ACCESS_ADMINISTER ior PRINTER_ACCESS_USE)
+Define PRINTER_READ       for (STANDARD_RIGHTS_READ ior PRINTER_ACCESS_USE)
+Define PRINTER_WRITE      for (STANDARD_RIGHTS_WRITE ior PRINTER_ACCESS_USE)
+Define PRINTER_EXECUTE    for (STANDARD_RIGHTS_EXECUTE ior PRINTER_ACCESS_USE)
+
+{ Name = tPrinterDefaults }
+Struct tPrinterDefaults
+    Address pDatatype      // Pointer to a null-terminated string that specifies the default data type for a printer.
+    Address pDevMode       // Pointer to a DEVMODE structure that identifies the default environment and initialization data for a printer.
+    UInteger DesiredAccess // Specifies desired access rights for a printer. The OpenPrinter function uses this member to set access rights to the printer. These rights can affect the operation of the SetPrinter and DeletePrinter functions. The access rights can be one of the above constants
+End_Struct

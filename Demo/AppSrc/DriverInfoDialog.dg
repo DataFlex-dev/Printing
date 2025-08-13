@@ -1,0 +1,245 @@
+﻿Use Windows.pkg
+Use cCJGridColumnRowIndicator.pkg
+Use cCJGridColumn.pkg
+
+Object oDriverInfoDialog is a ModalPanel
+    Set Label to "DriverInfo"
+    Set Size to 249 413
+    Set piMinSize to 104 217
+    Set Location to 2 2
+    Set Border_Style To Border_Thick
+
+    Procedure Page_Object Boolean bPage
+        Forward Send Page_Object bPage
+
+        If (bPage) Begin
+            Set Icon to "Printing.Ico"
+        End
+    End_Procedure
+
+    Object oCloseButton is a Button
+        Set Label to "&Close"
+        Set Location to 232 353
+        Set peAnchors To anBottomRight
+        Set Default_State To True
+
+        Procedure OnClick
+            Send Close_Panel
+        End_Procedure
+    End_Object
+
+    Object oDriverInfoGrid is a cCJGrid
+        Set Location to 5 5
+        Set Size to 225 398
+        Set peAnchors to anAll
+        Set pbAllowEdit to False
+        Set pbAllowDeleteRow to False
+        Set pbAllowAppendRow to False
+        Set pbAutoAppend to False
+        Set pbAllowInsertRow to False
+        Set pbAutoSave to False
+        Set pbEditOnTyping to False
+        Set piAlternateRowBackgroundColor to clBtnFace
+        Set pbUseAlternateRowBackgroundColor to True
+
+        { DesignTime = False }
+        Property Handle phoInfo
+        { DesignTime = False }
+        Property Integer piIndex
+
+        Object oCJGridColumnRowIndicator is a cCJGridColumnRowIndicator
+            Set piWidth to 25
+        End_Object
+
+        Object oAttributeNameColumn is a cCJGridColumn
+            Set piWidth to 114
+            Set psCaption to "Attribute"
+        End_Object
+
+        Object oAttributeValueColumn is a cCJGridColumn
+            Set piWidth to 274
+            Set psCaption to "Value"
+        End_Object
+
+        Procedure Activating
+            Forward Send Activating
+
+            Send ShowData
+        End_Procedure
+
+        Procedure ShowData
+            Handle hoInfo
+            tPrinterDriverInfo[] DriversInfo
+            tDataSourceRow[] DriverInfoGridData
+            Integer iIndex iAttributeNameColumnID iAttributeValueColumnID iRow iElements iElement
+            String[] sTexts
+
+            Get phoInfo to hoInfo
+            Get piIndex to iIndex
+
+            Get pDriversInfo of hoInfo to DriversInfo
+
+            Get piColumnId of oAttributeNameColumn to iAttributeNameColumnID
+            Get piColumnId of oAttributeValueColumn to iAttributeValueColumnID
+
+            Move 0 to iRow
+
+            Move "Version" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].cVersion to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "DriverName" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].sName to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "Environment" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].sEnvironment to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "DriverPath" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].sDriverPath to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "DataFile" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].sDataFile to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "ConfigFile" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].sConfigFile to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "HelpFile" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].sHelpFile to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "DependentFiles" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move (SizeOfArray (DriversInfo[iIndex].sDependentFiles)) to iElements
+            If (iElements > 0) Begin
+                Decrement iElements
+                For iElement from 0 to iElements
+                    Move DriversInfo[iIndex].sDependentFiles[iElement] to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+                    Increment iRow
+                Loop
+            End
+            Else Begin
+                Increment iRow
+            End
+
+            Move "MonitorName" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].sMonitorName to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "DefaultDataType" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].sDefaultDataType to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "PreviousNames" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move (SizeOfArray (DriversInfo[iIndex].sPreviousNames)) to iElements
+            If (iElements > 0) Begin
+                Decrement iElements
+                For iElement from 0 to iElements
+                    Move DriversInfo[iIndex].sPreviousNames[iElement] to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+                    Increment iRow
+                Loop
+            End
+            Else Begin
+                Increment iRow
+            End
+
+            Move "DateTime" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].dtDriverDateTime to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "Version" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].uiDriverVersion to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "MfgName" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].sMfgName to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "OEMUrl" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].sOEMUrl to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "HardwareID" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].sHardwareID to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "Provider" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].sProvider to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "PrintProcessor" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].sPrintProcessor to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "VendorSetup" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].sVendorSetup to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "ColorProfiles" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move (SizeOfArray (DriversInfo[iIndex].sColorProfiles)) to iElements
+            If (iElements > 0) Begin
+                Decrement iElements
+                For iElement from 0 to iElements
+                    Move DriversInfo[iIndex].sColorProfiles[iElement] to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+                    Increment iRow
+                Loop
+            End
+            Else Begin
+                Increment iRow
+            End
+
+            Move "InfPath" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].sInfPath to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+
+            Move "Attributes" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Get DriverAttributesText of hoInfo iIndex to sTexts
+            Move (SizeOfArray (sTexts)) to iElements
+            If (iElements > 0) Begin
+                Decrement iElements
+                For iElement from 0 to iElements
+                    Move sTexts[iElement] to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+                    Increment iRow
+                Loop
+            End
+            Else Begin
+                Increment iRow
+            End
+
+            Move "Core Driver Dependencies" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move (SizeOfArray (DriversInfo[iIndex].sCoreDriverDependencies)) to iElements
+            If (iElements > 0) Begin
+                Decrement iElements
+                For iElement from 0 to iElements
+                    Move DriversInfo[iIndex].sCoreDriverDependencies[iElement] to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+                    Increment iRow
+                Loop
+            End
+            Else Begin
+                Increment iRow
+            End
+
+            Move "Min Inbox Driver Ver Date" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].dtMinInboxDriverVerDate to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "Min Inbox Driver Ver Version" to DriverInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move DriversInfo[iIndex].uiMinInboxDriverVerVersion to DriverInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Send InitializeData DriverInfoGridData
+        End_Procedure
+    End_Object
+
+    Procedure ShowInfo Handle hoInfo Integer iIndex
+        Set phoInfo of oDriverInfoGrid to hoInfo
+        Set piIndex of oDriverInfoGrid to iIndex
+
+        Send Popup_Modal
+    End_Procedure
+
+    On_Key Key_Alt+Key_C Send KeyAction of oCloseButton
+    On_Key Key_Escape Send KeyAction Of oCloseButton
+End_Object

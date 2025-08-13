@@ -1,0 +1,8 @@
+[Properties]
+Version=25.0
+[WorkspacePaths]
+ConfigFile=.\Programs\Config.ws
+[Conditionals]
+Is$WebApp=False
+[Libraries]
+Lib1=..\Libraries\DateAndTime\DateTime.sws

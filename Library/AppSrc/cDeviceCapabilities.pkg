@@ -1,0 +1,1149 @@
+﻿Use EnumPrinters.h.pkg
+
+// Documentation: https://msdn.microsoft.com/en-us/library/windows/desktop/dd183552%28v=vs.85%29.aspx
+
+Define INVALID_FILE_ATTRIBUTES for |CV4294967295
+
+// bit fields of the return value (DWord) for DC_TRUETYPE
+Define DCTT_BITMAP             for |CI$0000001
+Define DCTT_DOWNLOAD           for |CI$0000002
+Define DCTT_SUBDEV             for |CI$0000004
+Define DCTT_DOWNLOAD_OUTLINE   for |CI$0000008
+
+// Media types
+Define DMMEDIA_STANDARD      for 1   // Standard paper
+Define DMMEDIA_TRANSPARENCY  for 2   // Transparency
+Define DMMEDIA_GLOSSY        for 3   // Glossy paper
+Define DMMEDIA_USER          for 256 // Device-specific media start here
+
+// bin selections
+Define DMBIN_UPPER         for 1
+Define DMBIN_FIRST         for DMBIN_UPPER
+Define DMBIN_ONLYONE       for 1
+Define DMBIN_LOWER         for 2
+Define DMBIN_MIDDLE        for 3
+Define DMBIN_MANUAL        for 4
+Define DMBIN_ENVELOPE      for 5
+Define DMBIN_ENVMANUAL     for 6
+Define DMBIN_AUTO          for 7
+Define DMBIN_TRACTOR       for 8
+Define DMBIN_SMALLFMT      for 9
+Define DMBIN_LARGEFMT      for 10
+Define DMBIN_LARGECAPACITY for 11
+Define DMBIN_CASSETTE      for 14
+Define DMBIN_FORMSOURCE    for 15
+Define DMBIN_LAST          for DMBIN_FORMSOURCE
+Define DMBIN_USER          for 256     // device specific bins start here
+
+// device capabilities indices
+Define DC_FIELDS               for 1
+Define DC_PAPERS               for 2
+Define DC_PAPERSIZE            for 3
+Define DC_MINEXTENT            for 4
+Define DC_MAXEXTENT            for 5
+Define DC_BINS                 for 6
+Define DC_DUPLEX               for 7
+Define DC_SIZE                 for 8
+Define DC_EXTRA                for 9
+Define DC_VERSION              for 10
+Define DC_DRIVER               for 11
+Define DC_BINNAMES             for 12
+Define DC_ENUMRESOLUTIONS      for 13
+Define DC_FILEDEPENDENCIES     for 14
+Define DC_TRUETYPE             for 15
+Define DC_PAPERNAMES           for 16
+Define DC_ORIENTATION          for 17
+Define DC_COPIES               for 18
+Define DC_BINADJUST            for 19 // Not used for NT-based operating systems.
+Define DC_EMF_COMPLIANT        for 20 // Not used for NT-based operating systems.
+Define DC_DATATYPE_PRODUCED    for 21 // Not used for NT-based operating systems.
+Define DC_COLLATE              for 22
+Define DC_MANUFACTURER         for 23 // Not used for NT-based operating systems.
+Define DC_MODEL                for 24 // Not used for NT-based operating systems.
+Define DC_PERSONALITY          for 25
+Define DC_PRINTRATE            for 26
+Define DC_PRINTRATEUNIT        for 27
+Define DC_PRINTERMEM           for 28
+Define DC_MEDIAREADY           for 29
+Define DC_STAPLE               for 30
+Define DC_PRINTRATEPPM         for 31
+Define DC_COLORDEVICE          for 32
+Define DC_NUP                  for 33
+Define DC_MEDIATYPENAMES       for 34
+Define DC_MEDIATYPES           for 35
+
+// Print rate units
+Define PRINTRATEUNIT_PPM       for 1 // Characters per second.
+Define PRINTRATEUNIT_CPS       for 2 // Inches per minute.
+Define PRINTRATEUNIT_LPM       for 3 // Lines per minute.
+Define PRINTRATEUNIT_IPM       for 4 // Pages per minute.
+
+Struct tDeviceInfo
+    Integer iValue
+    String sDescription
+End_Struct
+
+External_Function WinAPI_DeviceCapabilities "DeviceCapabilitiesW" WinSpool.drv ;
+    Pointer pDevice ;
+    Pointer pPort ;
+    Short fwCapability ;
+    Pointer pOutput ;
+    Pointer pDevMode ;
+    Returns Integer
+
+Class cDeviceCapabilities is a cObject
+    Procedure Construct_Object
+        Forward Send Construct_Object
+
+        Property String psDeviceName
+        Property String psPort
+        Property Pointer ppDevMode
+    End_Procedure
+
+    Function DriverVersion Returns Integer
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Integer iRetval
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_DRIVER, 0, pDevMode)) to iRetval
+
+        Function_Return iRetval
+    End_Function
+
+    // Convert a short array to a string
+    { Visibility = Private }
+    Function ShortArrayToString Short[] siChars Returns String
+        String sResult
+
+        Move (PointerToWString (AddressOf (siChars))) to sResult
+        Move (CString (sResult)) to sResult
+
+        Function_Return sResult
+    End_Function
+
+    Function FileDependencies Returns String[]
+        WString wsDeviceName wsPort
+        String[] sFileNames
+        UShort[] siDependenciesData siDependencyData
+        Pointer pDevMode
+        Integer iRetval iCounter
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        // Get the number of Bin Names
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_FILEDEPENDENCIES, 0, pDevMode)) to iRetval
+        If (iRetval > 0 and iRetval <> INVALID_FILE_ATTRIBUTES) Begin
+            // Resize destination array
+            Move (ResizeArray (sFileNames, iRetval)) to sFileNames
+            // Resize array that gets the data from the API call
+            Move (ResizeArray (siDependenciesData, iRetval * 64)) to siDependenciesData
+            Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_FILEDEPENDENCIES, AddressOf (siDependenciesData), pDevMode)) to iRetval
+            For iCounter from 1 to iRetval
+                Move (CopyArray (siDependenciesData, iCounter - 1 * 64, iCounter * 64 - 1)) to siDependencyData
+                Get ShortArrayToString siDependencyData to sFileNames[iCounter - 1]
+            Loop
+        End
+
+        Function_Return sFileNames
+    End_Function
+
+    Function MaximumPaperSize Returns Integer[]
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        UInteger uiMaxSize
+        Integer[] iMaxSizes
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_MAXEXTENT, 0, pDevMode)) to uiMaxSize
+        Move (Low (uiMaxSize)) to iMaxSizes[0]
+        Move (Hi (uiMaxSize)) to iMaxSizes[1]
+
+        Function_Return iMaxSizes
+    End_Function
+
+    Function MediaReady Returns String[]
+        WString wsDeviceName wsPort
+        String[] sFormNames
+        UShort[] siFormsData siFormData
+        Pointer pDevMode
+        Integer iRetval iCounter
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        // Get the number of entries Names
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_MEDIAREADY, 0, pDevMode)) to iRetval
+        If (iRetval > 0 and iRetval <> INVALID_FILE_ATTRIBUTES) Begin
+            // Resize destination array
+            Move (ResizeArray (sFormNames, iRetval)) to sFormNames
+            // Resize array that gets the data from the API call
+            Move (ResizeArray (siFormsData, iRetval * 64)) to siFormsData
+            Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_MEDIAREADY, AddressOf (siFormsData), pDevMode)) to iRetval
+            For iCounter from 1 to iRetval
+                Move (CopyArray (siFormsData, iCounter - 1 * 64, iCounter * 64 - 1)) to siFormData
+                Get ShortArrayToString siFormData to sFormNames[iCounter - 1]
+            Loop
+        End
+
+        Function_Return sFormNames
+    End_Function
+
+    Function MediaTypes Returns tDeviceInfo[]
+        DWord[] dwMediaTypes
+        Integer iElement iRetval
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        tDeviceInfo[] MediaTypeInfos
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        // Get the number of bins first
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_MEDIATYPES, 0, pDevMode)) to iRetval
+        If (iRetval > 0 and iRetval <> INVALID_FILE_ATTRIBUTES) Begin
+            Move (ResizeArray (dwMediaTypes, iRetval)) to dwMediaTypes
+            Move (ResizeArray (MediaTypeInfos, iRetval)) to MediaTypeInfos
+
+            Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_MEDIATYPES, AddressOf (dwMediaTypes), pDevMode)) to iRetval
+            For iElement from 0 to (iRetval - 1)
+                Move dwMediaTypes[iElement] to MediaTypeInfos[iElement].iValue
+                Case Begin
+                    Case (dwMediaTypes[iElement] = 0)
+                        Move 'Unknown' to MediaTypeInfos[iElement].sDescription
+                        Case Break
+                    Case (dwMediaTypes[iElement] = DMMEDIA_STANDARD)
+                        Move 'Standard paper' to MediaTypeInfos[iElement].sDescription
+                        Case Break
+                    Case (dwMediaTypes[iElement] = DMMEDIA_TRANSPARENCY)
+                        Move 'Transparency' to MediaTypeInfos[iElement].sDescription
+                        Case Break
+                    Case (dwMediaTypes[iElement] = DMMEDIA_GLOSSY)
+                        Move 'Glossy paper' to MediaTypeInfos[iElement].sDescription
+                        Case Break
+                    Case (dwMediaTypes[iElement] >= DMMEDIA_USER)
+                        Move 'Device-specific media' to MediaTypeInfos[iElement].sDescription
+                        Case Break
+                Case End
+            Loop
+        End
+
+        Function_Return MediaTypeInfos
+    End_Function
+
+    Function MediaTypeNames Returns String[]
+        WString wsDeviceName wsPort
+        String[] sTypeNames
+        UShort[] siTypesData siTypeData
+        Pointer pDevMode
+        Integer iRetval iCounter
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        // Get the number of Bin Names
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_MEDIATYPENAMES, 0, pDevMode)) to iRetval
+        If (iRetval > 0 and iRetval <> INVALID_FILE_ATTRIBUTES) Begin
+            // Resize destination array
+            Move (ResizeArray (sTypeNames, iRetval)) to sTypeNames
+            // Resize array that gets the data from the API call
+            Move (ResizeArray (siTypesData, iRetval * 64)) to siTypesData
+            Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_MEDIATYPENAMES, AddressOf (siTypesData), pDevMode)) to iRetval
+            For iCounter from 1 to iRetval
+                Move (CopyArray (siTypesData, iCounter - 1 * 64, iCounter * 64 - 1)) to siTypeData
+                Get ShortArrayToString siTypeData to sTypeNames[iCounter - 1]
+            Loop
+        End
+
+        Function_Return sTypeNames
+    End_Function
+
+    Function MinimumPaperSize Returns Integer[]
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        UInteger uiMinSize
+        Integer[] iMinSizes
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_MINEXTENT, 0, pDevMode)) to uiMinSize
+        Move (Low (uiMinSize)) to iMinSizes[0]
+        Move (Hi (uiMinSize)) to iMinSizes[1]
+
+        Function_Return iMinSizes
+    End_Function
+
+    Function PaperOrientationAngle Returns tDeviceInfo
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        tDeviceInfo PaperOrientationInfo
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_ORIENTATION, 0, pDevMode)) to PaperOrientationInfo.iValue
+
+        Case Begin
+            Case (PaperOrientationInfo.iValue = 0)
+                Move "No landscape orientation" to PaperOrientationInfo.sDescription
+                Case Break
+            Case (PaperOrientationInfo.iValue = 90)
+                Move "Portrait is rotated 90 degrees to produce landscape" to PaperOrientationInfo.sDescription
+                Case Break
+            Case (PaperOrientationInfo.iValue = 270)
+                Move "Portrait is rotated 270 degrees to produce landscape" to PaperOrientationInfo.sDescription
+                Case Break
+        Case End
+
+        Function_Return PaperOrientationInfo
+    End_Function
+
+    Function PrinterDriverSpecificationVersion Returns Integer
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Integer iRetval
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_VERSION, 0, pDevMode)) to iRetval
+
+        Function_Return iRetval
+    End_Function
+
+    Function PrinterMemory Returns Integer
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Integer iRetval
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_PRINTERMEM, 0, pDevMode)) to iRetval
+
+        If (iRetval = INVALID_FILE_ATTRIBUTES) Begin
+            Function_Return -1
+        End
+
+        Function_Return iRetval
+    End_Function
+
+    Function PrintRate Returns Integer
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Integer iRetval
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_PRINTRATE, 0, pDevMode)) to iRetval
+
+        If (iRetval = INVALID_FILE_ATTRIBUTES) Begin
+            Function_Return -1
+        End
+
+        Function_Return iRetval
+    End_Function
+
+    Function PrintRatePPM Returns Integer
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Integer iRetval
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_PRINTRATEPPM, 0, pDevMode)) to iRetval
+
+        If (iRetval = INVALID_FILE_ATTRIBUTES) Begin
+            Function_Return -1
+        End
+
+        Function_Return iRetval
+    End_Function
+
+    Function PrintRateUnit Returns tDeviceInfo
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Integer iRetval
+        tDeviceInfo PrintRateInfo
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_PRINTRATEUNIT, 0, pDevMode)) to iRetval
+        If (iRetval = INVALID_FILE_ATTRIBUTES) Begin
+            Move -1 to PrintRateInfo.iValue
+            Move "Unknown Rate Unit" to PrintRateInfo.sDescription
+        End
+        Else Begin
+            Move iRetval to PrintRateInfo.iValue
+
+            Case Begin
+                Case (PrintRateInfo.iValue = PRINTRATEUNIT_PPM)
+                    Move "Characters per second" to PrintRateInfo.sDescription
+                    Case Break
+                Case (PrintRateInfo.iValue = PRINTRATEUNIT_CPS)
+                    Move "Inches per minute" to PrintRateInfo.sDescription
+                    Case Break
+                Case (PrintRateInfo.iValue = PRINTRATEUNIT_LPM)
+                    Move "Lines per minute" to PrintRateInfo.sDescription
+                    Case Break
+                Case (PrintRateInfo.iValue = PRINTRATEUNIT_IPM)
+                    Move "Pages per minute" to PrintRateInfo.sDescription
+                    Case Break
+            Case End
+        End
+
+        Function_Return PrintRateInfo
+    End_Function
+
+    Function PrintTrueType Returns tDeviceInfo[]
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Integer iRetval iElement
+        tDeviceInfo[] TrueTypeInfos
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_TRUETYPE, 0, pDevMode)) to iRetval
+        If (iRetval <> INVALID_FILE_ATTRIBUTES) Begin
+            If (IsFlagIn (DCTT_BITMAP, iRetval)) Begin
+                Move DCTT_BITMAP to TrueTypeInfos[iElement].iValue
+                Move "Device can print TrueType fonts as graphics" to TrueTypeInfos[iElement].sDescription
+                Increment iElement
+            End
+
+            If (IsFlagIn (DCTT_DOWNLOAD, iRetval)) Begin
+                Move DCTT_DOWNLOAD to TrueTypeInfos[iElement].iValue
+                Move "Device can download TrueType fonts" to TrueTypeInfos[iElement].sDescription
+                Increment iElement
+            End
+
+            If (IsFlagIn (DCTT_SUBDEV, iRetval)) Begin
+                Move DCTT_SUBDEV to TrueTypeInfos[iElement].iValue
+                Move "Device can substitute device fonts for TrueType fonts" to TrueTypeInfos[iElement].sDescription
+                Increment iElement
+            End
+
+            If (IsFlagIn (DCTT_DOWNLOAD_OUTLINE, iRetval)) Begin
+                Move DCTT_DOWNLOAD_OUTLINE to TrueTypeInfos[iElement].iValue
+                Move "Download Outline" to TrueTypeInfos[iElement].sDescription
+                Increment iElement
+            End
+        End
+
+        Function_Return TrueTypeInfos
+    End_Function
+
+    Function SupportedBinNames Returns String[]
+        WString wsDeviceName wsPort
+        String[] sBinNames
+        UShort[] siBinsData siBinData
+        Pointer pDevMode
+        Integer iRetval iCounter
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        // Get the number of Bin Names
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_BINNAMES, 0, pDevMode)) to iRetval
+        If (iRetval > 0) Begin
+            // Resize destination array
+            Move (ResizeArray (sBinNames, iRetval)) to sBinNames
+            // Resize array that gets the data from the API call
+            Move (ResizeArray (siBinsData, iRetval * 24)) to siBinsData
+            Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_BINNAMES, AddressOf (siBinsData), pDevMode)) to iRetval
+            For iCounter from 1 to iRetval
+                Move (CopyArray (siBinsData, iCounter - 1 * 24, iCounter * 24 - 1)) to siBinData
+                Get ShortArrayToString siBinData to sBinNames[iCounter - 1]
+            Loop
+        End
+
+        Function_Return sBinNames
+    End_Function
+
+    Function SupportedBins Returns tDeviceInfo[]
+        Short[] siBins
+        Integer iElement iRetval
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        tDeviceInfo[] BinInfos
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        // Get the number of bins first
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_BINS, 0, pDevMode)) to iRetval
+        If (iRetval > 0) Begin
+            Move (ResizeArray (siBins, iRetval)) to siBins
+
+            Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_BINS, AddressOf (siBins), pDevMode)) to iRetval
+            For iElement from 0 to (iRetval - 1)
+                Move siBins[iElement] to BinInfos[iElement].iValue
+                Case Begin
+                    Case (siBins[iElement] = DMBIN_UPPER)
+                        Move "Upper" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] = DMBIN_FIRST)
+                        Move "First" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] = DMBIN_ONLYONE)
+                        Move "Only One" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] = DMBIN_LOWER)
+                        Move "Lower" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] = DMBIN_MIDDLE)
+                        Move "Middle" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] = DMBIN_MANUAL)
+                        Move "Manual" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] = DMBIN_ENVELOPE)
+                        Move "Envelope" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] = DMBIN_ENVMANUAL)
+                        Move "Envelope Manual" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] = DMBIN_AUTO)
+                        Move "Auto" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] = DMBIN_TRACTOR)
+                        Move "Tractor" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] = DMBIN_SMALLFMT)
+                        Move "SmallFMT" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] = DMBIN_LARGEFMT)
+                        Move "LargeFMT" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] = DMBIN_LARGECAPACITY)
+                        Move "Large Capactity" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] = DMBIN_CASSETTE)
+                        Move "Cassette" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] = DMBIN_FORMSOURCE)
+                        Move "Form Source" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] = DMBIN_LAST)
+                        Move "Last" to BinInfos[iElement].sDescription
+                        Case Break
+                    Case (siBins[iElement] >= DMBIN_USER)
+                        Move "Device Specific Bin" to BinInfos[iElement].sDescription
+                        Case Break
+                Case End
+            Loop
+        End
+
+        Function_Return BinInfos
+    End_Function
+
+    Function SupportedMultipleDocumentPages Returns Integer[]
+        Integer[] iNup
+        Integer iElement iRetval
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        // Get the number of entries first
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_NUP, 0, pDevMode)) to iRetval
+        If (iRetval > 0 and iRetval <> INVALID_FILE_ATTRIBUTES) Begin
+            Move (ResizeArray (iNup, iRetval)) to iNup
+            Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_NUP, AddressOf (iNup), pDevMode)) to iRetval
+        End
+
+        Function_Return iNup
+    End_Function
+
+    Function SupportedResolutions Returns Integer[]
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Integer iResolutions
+        Integer[] iSupportedResolutions
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_ENUMRESOLUTIONS, 0, 0)) to iResolutions
+        If (iResolutions > 0) Begin
+            Move (ResizeArray (iSupportedResolutions, iResolutions * 2)) to iSupportedResolutions
+            Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_ENUMRESOLUTIONS, AddressOf (iSupportedResolutions), 0)) to iResolutions
+        End
+
+        Function_Return iSupportedResolutions
+    End_Function
+
+    Function SupportedPapers Returns tDeviceInfo[]
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Short[] siPaperInfos
+        Integer iRetval iElement
+        tDeviceInfo[] PaperInfos
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        // Get the number of papers
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_PAPERS, 0, pDevMode)) to iRetval
+        If (iRetval > 0) Begin
+            Move (ResizeArray (siPaperInfos, iRetval)) to siPaperInfos
+            Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_PAPERS, AddressOf (siPaperInfos), pDevMode)) to iRetval
+            For iElement from 0 to (iRetval - 1)
+                Move siPaperInfos[iElement] to PaperInfos[iElement].iValue
+                Case Begin
+                    Case (siPaperInfos[iElement] = DMPAPER_LETTER)
+                        Move "Letter 8 1/2 x 11 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_LETTERSMALL)
+                        Move "Letter Small 8 1/2 x 11 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_TABLOID)
+                        Move "Tabloid 11 x 17 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_LEDGER)
+                        Move "Ledger 17 x 11 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_LEGAL)
+                        Move "Legal 8 1/2 x 14 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_STATEMENT)
+                        Move "Statement 5 1/2 x 8 1/2 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_EXECUTIVE)
+                        Move "Executive 7 1/4 x 10 1/2 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A3)
+                        Move "A3 297 x 420 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A4)
+                        Move "A4 210 x 297 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A4SMALL)
+                        Move "A4 Small 210 x 297 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A5)
+                        Move "A5 148 x 210 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_B4)
+                        Move "B4 (JIS) 250 x 354" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_B5)
+                        Move "B5 (JIS) 182 x 257 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_FOLIO)
+                        Move "Folio 8 1/2 x 13 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_QUARTO)
+                        Move "Quarto 215 x 275 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_10X14)
+                        Move "10x14 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_11X17)
+                        Move "11x17 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_NOTE)
+                        Move "Note 8 1/2 x 11 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_9)
+                        Move "Envelope #9 3 7/8 x 8 7/8" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_10)
+                        Move "Envelope #10 4 1/8 x 9 1/2" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_11)
+                        Move "Envelope #11 4 1/2 x 10 3/8" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_12)
+                        Move "Envelope #12 4 \276 x 11" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_14)
+                        Move "Envelope #14 5 x 11 1/2" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_CSHEET)
+                        Move "C size sheet" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_DSHEET)
+                        Move "D size sheet" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ESHEET)
+                        Move "E size sheet" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_DL)
+                        Move "Envelope DL 110 x 220mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_C5)
+                        Move "Envelope C5 162 x 229 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_C3)
+                        Move "Envelope C3  324 x 458 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_C4)
+                        Move "Envelope C4  229 x 324 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_C6)
+                        Move "Envelope C6  114 x 162 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_C65)
+                        Move "Envelope C65 114 x 229 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_B4)
+                        Move "Envelope B4  250 x 353 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_B5)
+                        Move "Envelope B5  176 x 250 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_B6)
+                        Move "Envelope B6  176 x 125 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_ITALY)
+                        Move "Envelope 110 x 230 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_MONARCH)
+                        Move "Envelope Monarch 3.875 x 7.5 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_PERSONAL)
+                        Move "6 3/4 Envelope 3 5/8 x 6 1/2 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_FANFOLD_US)
+                        Move "US Std Fanfold 14 7/8 x 11 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_FANFOLD_STD_GERMAN)
+                        Move "German Std Fanfold 8 1/2 x 12 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_FANFOLD_LGL_GERMAN)
+                        Move "German Legal Fanfold 8 1/2 x 13 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ISO_B4)
+                        Move "B4 (ISO) 250 x 353 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_JAPANESE_POSTCARD)
+                        Move "Japanese Postcard 100 x 148 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_9X11)
+                        Move "9 x 11 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_10X11)
+                        Move "10 x 11 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_15X11)
+                        Move "15 x 11 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_ENV_INVITE)
+                        Move "Envelope Invite 220 x 220 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_RESERVED_48)
+                        Move "RESERVED--Do not Use" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_RESERVED_49)
+                        Move "RESERVED--Do not Use" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_LETTER_EXTRA)
+                        Move "Letter Extra 9 \275 x 12 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_LEGAL_EXTRA)
+                        Move "Legal Extra 9 \275 x 15 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_TABLOID_EXTRA)
+                        Move "Tabloid Extra 11.69 x 18 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A4_EXTRA)
+                        Move "A4 Extra 9.27 x 12.69 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_LETTER_TRANSVERSE)
+                        Move "Letter Transverse 8 \275 x 11 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A4_TRANSVERSE)
+                        Move "A4 Transverse 210 x 297 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_LETTER_EXTRA_TRANSVERSE)
+                        Move "Letter Extra Transverse 9\275 x 12 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A_PLUS)
+                        Move "SuperA/SuperA/A4 227 x 356 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_B_PLUS)
+                        Move "SuperB/SuperB/A3 305 x 487 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_LETTER_PLUS)
+                        Move "Letter Plus 8.5 x 12.69 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A4_PLUS)
+                        Move "A4 Plus 210 x 330 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A5_TRANSVERSE)
+                        Move "A5 Transverse 148 x 210 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_B5_TRANSVERSE)
+                        Move "B5 (JIS) Transverse 182 x 257 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A3_EXTRA)
+                        Move "A3 Extra 322 x 445 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A5_EXTRA)
+                        Move "A5 Extra 174 x 235 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_B5_EXTRA)
+                        Move "B5 (ISO) Extra 201 x 276 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A2)
+                        Move "A2 420 x 594 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A3_TRANSVERSE)
+                        Move "A3 Transverse 297 x 420 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A3_EXTRA_TRANSVERSE)
+                        Move "A3 Extra Transverse 322 x 445 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_DBL_JAPANESE_POSTCARD)
+                        Move "Japanese Double Postcard 200 x 148 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A6)
+                        Move "A6 105 x 148 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_JENV_KAKU2)
+                        Move "Japanese Envelope Kaku #2" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_JENV_KAKU3)
+                        Move "Japanese Envelope Kaku #3" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_JENV_CHOU3)
+                        Move "Japanese Envelope Chou #3" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_JENV_CHOU4)
+                        Move "Japanese Envelope Chou #4" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_LETTER_ROTATED)
+                        Move "Letter Rotated 11 x 8 1/2 11 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A3_ROTATED)
+                        Move "A3 Rotated 420 x 297 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A4_ROTATED)
+                        Move "A4 Rotated 297 x 210 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A5_ROTATED)
+                        Move "A5 Rotated 210 x 148 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_B4_JIS_ROTATED)
+                        Move "B4 (JIS) Rotated 364 x 257 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_B5_JIS_ROTATED)
+                        Move "B5 (JIS) Rotated 257 x 182 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_JAPANESE_POSTCARD_ROTATED)
+                        Move "Japanese Postcard Rotated 148 x 100 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_DBL_JAPANESE_POSTCARD_ROTATED)
+                        Move "Double Japanese Postcard Rotated 148 x 200 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_A6_ROTATED)
+                        Move "A6 Rotated 148 x 105 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_JENV_KAKU2_ROTATED)
+                        Move "Japanese Envelope Kaku #2 Rotated" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_JENV_KAKU3_ROTATED)
+                        Move "Japanese Envelope Kaku #3 Rotated" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_JENV_CHOU3_ROTATED)
+                        Move "Japanese Envelope Chou #3 Rotated" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_JENV_CHOU4_ROTATED)
+                        Move "Japanese Envelope Chou #4 Rotated" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_B6_JIS)
+                        Move "B6 (JIS) 128 x 182 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_B6_JIS_ROTATED)
+                        Move "B6 (JIS) Rotated 182 x 128 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_12X11)
+                        Move "12 x 11 in" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_JENV_YOU4)
+                        Move "Japanese Envelope You #4" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_JENV_YOU4_ROTATED)
+                        Move "Japanese Envelope You #4 Rotated" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_P16K)
+                        Move "PRC 16K 146 x 215 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_P32K)
+                        Move "PRC 32K 97 x 151 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_P32KBIG)
+                        Move "PRC 32K(Big) 97 x 151 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_1)
+                        Move "PRC Envelope #1 102 x 165 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_2)
+                        Move "PRC Envelope #2 102 x 176 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_3)
+                        Move "PRC Envelope #3 125 x 176 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_4)
+                        Move "PRC Envelope #4 110 x 208 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_5)
+                        Move "PRC Envelope #5 110 x 220 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_6)
+                        Move "PRC Envelope #6 120 x 230 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_7)
+                        Move "PRC Envelope #7 160 x 230 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_8)
+                        Move "PRC Envelope #8 120 x 309 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_9)
+                        Move "PRC Envelope #9 229 x 324 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_10)
+                        Move "PRC Envelope #10 324 x 458 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_P16K_ROTATED)
+                        Move "PRC 16K Rotated" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_P32K_ROTATED)
+                        Move "PRC 32K Rotated" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_P32KBIG_ROTATED)
+                        Move "PRC 32K(Big) Rotated" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_1_ROTATED)
+                        Move "PRC Envelope #1 Rotated 165 x 102 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_2_ROTATED)
+                        Move "PRC Envelope #2 Rotated 176 x 102 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_3_ROTATED)
+                        Move "PRC Envelope #3 Rotated 176 x 125 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_4_ROTATED)
+                        Move "PRC Envelope #4 Rotated 208 x 110 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_5_ROTATED)
+                        Move "PRC Envelope #5 Rotated 220 x 110 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_6_ROTATED)
+                        Move "PRC Envelope #6 Rotated 230 x 120 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_7_ROTATED)
+                        Move "PRC Envelope #7 Rotated 230 x 160 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_8_ROTATED)
+                        Move "PRC Envelope #8 Rotated 309 x 120 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_9_ROTATED)
+                        Move "PRC Envelope #9 Rotated 324 x 229 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_PENV_10_ROTATED)
+                        Move "PRC Envelope #10 Rotated 458 x 324 mm" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case (siPaperInfos[iElement] = DMPAPER_USER)
+                        Move "User Defined" to PaperInfos[iElement].sDescription
+                        Case Break
+                    Case Else
+                        Move "Device Specific Paper" to PaperInfos[iElement].sDescription
+                        Case Break
+                Case End
+            Loop
+        End
+
+        Function_Return PaperInfos
+    End_Function
+
+    Function SupportedPaperSizes Returns tWinPoint[]
+        tWinPoint[] PaperSizeInfos
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Integer iRetval
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        // Get the number of PaperSizes
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_PAPERSIZE, 0, pDevMode)) to iRetval
+
+        Move (ResizeArray (PaperSizeInfos, iRetval)) to PaperSizeInfos
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_PAPERSIZE, AddressOf (PaperSizeInfos), pDevMode)) to iRetval
+
+        Function_Return PaperSizeInfos
+    End_Function
+
+    Function SupportedPaperNames Returns String[]
+        WString wsDeviceName wsPort
+        String[] sPaperNames
+        UShort[] siPaperNamesData siPaperNameData
+        Pointer pDevMode
+        Integer iRetval iCounter
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        // Get the number of Bin Names
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_PAPERNAMES, 0, pDevMode)) to iRetval
+        If (iRetval > 0 and iRetval <> INVALID_FILE_ATTRIBUTES) Begin
+            // Resize destination array
+            Move (ResizeArray (sPaperNames, iRetval)) to sPaperNames
+            // Resize array that gets the data from the API call
+            Move (ResizeArray (siPaperNamesData, iRetval * 64)) to siPaperNamesData
+            Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_PAPERNAMES, AddressOf (siPaperNamesData), pDevMode)) to iRetval
+            For iCounter from 1 to iRetval
+                Move (CopyArray (siPaperNamesData, iCounter - 1 * 64, iCounter * 64 - 1)) to siPaperNameData
+                Get ShortArrayToString siPaperNameData to sPaperNames[iCounter - 1]
+            Loop
+        End
+
+        Function_Return sPaperNames
+    End_Function
+
+    Function SupportedPersonality Returns String[]
+        WString wsDeviceName wsPort
+        String[] sPersonalities
+        UShort[] siPersonalitiesData siPersonalityData
+        Pointer pDevMode
+        Integer iRetval iCounter
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        // Get the number of entries
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_PERSONALITY, 0, pDevMode)) to iRetval
+        If (iRetval > 0 and iRetval <> INVALID_FILE_ATTRIBUTES) Begin
+            // Resize destination array
+            Move (ResizeArray (sPersonalities, iRetval)) to sPersonalities
+            // Resize array that gets the data from the API call
+            Move (ResizeArray (siPersonalitiesData, iRetval * 32)) to siPersonalitiesData
+            Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_PERSONALITY, AddressOf (siPersonalitiesData), pDevMode)) to iRetval
+            For iCounter from 1 to iRetval
+                Move (CopyArray (siPersonalitiesData, iCounter - 1 * 32, iCounter * 32 - 1)) to siPersonalityData
+                Get ShortArrayToString siPersonalityData to sPersonalities[iCounter - 1]
+            Loop
+        End
+
+        Function_Return sPersonalities
+    End_Function
+    
+    Function SupportsColorPrinting Returns Boolean
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Integer iRetval
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_COLORDEVICE, 0, pDevMode)) to iRetval
+
+        Function_Return iRetval
+    End_Function
+
+    Function SupportsDuplexPrinting Returns Boolean
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Integer iRetval
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_DUPLEX, 0, pDevMode)) to iRetval
+
+        Function_Return iRetval
+    End_Function
+    
+    Function SupportedFields Returns Integer
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Integer iRetval
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_FIELDS, 0, pDevMode)) to iRetval
+
+        Function_Return iRetval        
+    End_Function
+    
+    Function SupportsCollating Returns Integer
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Integer iRetval
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_COLLATE, 0, pDevMode)) to iRetval
+
+        Function_Return iRetval
+    End_Function
+    
+    Function SupportsCopies Returns Integer
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Integer iRetval
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_COPIES, 0, pDevMode)) to iRetval
+
+        Function_Return iRetval
+    End_Function
+
+    Function SupportsStapling Returns Boolean
+        WString wsDeviceName wsPort
+        Pointer pDevMode
+        Integer iRetval
+
+        Get psDeviceName to wsDeviceName
+        Get psPort to wsPort
+        Get ppDevMode to pDevMode
+
+        Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_STAPLE, 0, pDevMode)) to iRetval
+
+        Function_Return iRetval
+    End_Function
+End_Class

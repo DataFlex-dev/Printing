@@ -1,0 +1,96 @@
+﻿Use EnumPrinterForms.h.pkg
+Use tWinForm_Info_1.pkg
+Use tWinForm_Info_2.pkg
+Use tPrinterFormInfo.pkg
+Use OpenPrinter.h.pkg
+
+Class cPrinterFormsHandler is a cObject
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        
+        { DesignTime = False }
+        { Description = "Array of tPrinterFormInfo structs" }
+        Property tPrinterFormInfo[] pFormsInfo
+    End_Procedure
+    
+    // Enumerates the forms defined for a specific printer.
+    // The function only returns the names of the forms, more information is
+    // however available.
+    // Pass -1 for iFlags when you want ALL forms or pass FORM_USER, FORM_BUILTIN
+    // or FORM_PRINTER if you want a different, filtered list.
+    Procedure EnumForms String sPrinterName Integer eType Integer iFlags
+        Handle hPrinter
+        Integer iRetval iFormElements iFormElement iElement
+        UInteger cbNeeded cReturned
+        tWinForm_Info_1[] Forms1Info
+        tWinForm_Info_2[] Forms2Info
+        tPrinterFormInfo[] FormsInfo
+        Address aFormsInfo
+        WString wPrinterName
+
+        If (sPrinterName <> "") Begin
+            Move 0 to hPrinter
+            Move sPrinterName to wPrinterName
+            Move (WinAPI_OpenPrinter (AddressOf (wPrinterName), AddressOf (hPrinter), 0)) to iRetval
+            If (iRetval) Begin
+                Move 0 to cbNeeded
+                Move 0 to cReturned
+                Move (WinAPI_EnumForms (hPrinter, eType, 0, 0, AddressOf (cbNeeded), AddressOf (cReturned))) to iRetval
+                If (cbNeeded > 0) Begin
+                    Move (Alloc (cbNeeded)) to aFormsInfo
+                    Move (WinAPI_EnumForms (hPrinter, eType, aFormsInfo, cbNeeded, AddressOf (cbNeeded), AddressOf (cReturned))) to iRetval
+                    If (iRetval <> 0 and cReturned > 0) Begin
+                        Case Begin
+                            Case (eType = C_ENUMFORMS_TYPE_1)
+                                Move (ResizeArray (Forms1Info, cReturned)) to Forms1Info
+                                Move (MemCopy (AddressOf (Forms1Info), aFormsInfo, cReturned * SizeOfType (tWinForm_Info_1))) to iRetval
+                                Move (SizeOfArray (Forms1Info)) to iFormElements
+                                Case Break
+                            Case (eType = C_ENUMFORMS_TYPE_2)
+                                Move (ResizeArray (Forms2Info, cReturned)) to Forms2Info
+                                Move (MemCopy (AddressOf (Forms2Info), aFormsInfo, cReturned * SizeOfType (tWinForm_Info_2))) to iRetval
+                                Move (SizeOfArray (Forms2Info)) to iFormElements
+                                Case Break
+                        Case End
+                        If (iFlags = -1) Begin
+                            Move (ResizeArray (FormsInfo, iFormElements)) to FormsInfo
+                        End
+                        Decrement iFormElements
+                        For iFormElement from 0 to iFormElements
+                            Case Begin
+                                Case (eType = C_ENUMFORMS_TYPE_1)
+                                    If ((iFlags > -1 and Forms1Info[iFormElement].Flags = iFlags) or iFlags = -1) Begin
+                                        Move Forms1Info[iFormElement].Flags to FormsInfo[iFormElement].uiFlags
+                                        Move (PointerToWString (Forms1Info[iFormElement].pName)) to FormsInfo[iElement].sName
+                                        Move Forms1Info[iFormElement].Size to FormsInfo[iFormElement].Size
+                                        Move Forms1Info[iFormElement].ImageableArea to FormsInfo[iFormElement].ImageableArea
+                                        Increment iElement
+                                    End
+                                    Case Break
+                                Case (eType = C_ENUMFORMS_TYPE_2)
+                                    If ((iFlags > -1 and Forms2Info[iFormElement].Flags = iFlags) or iFlags = -1) Begin
+                                        Move Forms2Info[iFormElement].Flags to FormsInfo[iFormElement].uiFlags
+                                        Move (PointerToWString (Forms2Info[iFormElement].pName)) to FormsInfo[iElement].sName
+                                        Move Forms2Info[iFormElement].Size to FormsInfo[iFormElement].Size
+                                        Move Forms2Info[iFormElement].ImageableArea to FormsInfo[iFormElement].ImageableArea
+                                        Move (PointerToWString (Forms2Info[iFormElement].pKeyword)) to FormsInfo[iElement].sKeyword
+                                        Move Forms2Info[iFormElement].StringType to FormsInfo[iElement].uiStringType
+                                        Move (PointerToWString (Forms2Info[iFormElement].pMuiDll)) to FormsInfo[iElement].sMuiDll
+                                        Move Forms2Info[iFormElement].dwResourceId to FormsInfo[iElement].uiResourceId
+                                        Move (PointerToWString (Forms2Info[iFormElement].pDisplayName)) to FormsInfo[iElement].sDisplayName
+                                        Move Forms2Info[iFormElement].wLangId to FormsInfo[iElement].uiLangId
+                                        Increment iElement
+                                    End
+                                    Case Break
+                            Case End
+                        Loop
+                    End
+                    Move (Free (aFormsInfo)) to iRetval
+                End
+                Move (WinAPI_ClosePrinter (hPrinter)) to iRetval
+            End
+        End
+
+        Set pFormsInfo to FormsInfo
+    End_Procedure
+End_Class

@@ -1,0 +1,40 @@
+﻿Use VdfBase.pkg
+Use tWinStructs.pkg
+
+Struct tWinDriver_Info_8
+    UInteger cVersion
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment
+#ENDIF
+    Pointer pName
+    Pointer pEnvironment
+    Pointer pDriverPath
+    Pointer pDataFile
+    Pointer pConfigFile
+    Pointer pHelpFile
+    Pointer pDependentFiles
+    Pointer pMonitorName
+    Pointer pDefaultDataType
+    Pointer pszzPreviousNames
+    tWinFileTime ftDriverDate
+    UInteger ___Padding___
+    UBigInt dwlDriverVersion
+    Pointer pszMfgName
+    Pointer pszOEMUrl
+    Pointer pszHardwareID
+    Pointer pszProvider
+    Pointer pszPrintProcessor
+    Pointer pszVendorSetup
+    Pointer pszzColorProfiles
+    Pointer pszInfPath
+    UInteger dwPrinterDriverAttributes
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment2
+#ENDIF
+    Pointer pszzCoreDriverDependencies
+    tWinFileTime ftMinInboxDriverVerDate
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment3
+#ENDIF
+    UBigInt dwlMinInboxDriverVerVersion
+End_Struct

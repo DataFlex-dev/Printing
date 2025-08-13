@@ -1,0 +1,30 @@
+﻿Use Windows.pkg
+Use cHtmlHelp.pkg
+Use cApplication.pkg
+
+Object oHtmlHelp is a cHtmlHelp
+End_Object
+
+Object oApplication is a cApplication
+    Set pbPreserveEnvironment to False
+    Set peHelpType to htHtmlHelp
+    Set psAutoOpenWorkspace to ""
+End_Object
+
+Use cPrintersHandler.pkg
+
+Object oPrintersHandler is a cPrintersHandler
+End_Object
+
+Procedure RunTests Global
+    String sResult
+
+    Get TestPrinter of oPrintersHandler "NPI0438B8 (HP LaserJet 500 color M551)" to sResult
+    Send Info_Box sResult
+    Get TestPrinter of oPrintersHandler "Bullzip PDF Printer" to sResult
+    Send Info_Box sResult
+    Get TestPrinter of oPrintersHandler "Fake printer" to sResult
+    Send Info_Box sResult
+End_Procedure
+
+Send RunTests

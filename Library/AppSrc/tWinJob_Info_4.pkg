@@ -1,0 +1,39 @@
+﻿Use tWinStructs.pkg
+
+{ Name = Job_Info_4 }
+Struct tWinJob_Info_4
+    UInteger uiJobId              // A job identifier.  
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment
+#ENDIF
+    Pointer pPrinterName          // A pointer to a null-terminated string that specifies the name of the printer for which the job is spooled.
+    Pointer pMachineName          // A pointer to a null-terminated string that specifies the name of the machine that created the print job.
+    Pointer pUserName             // A pointer to a null-terminated string that specifies the name of the user that owns the print job.
+    Pointer pDocument             // A pointer to a null-terminated string that specifies the name of the print job (for example, "MS-WORD: Review.doc").
+    Pointer pNotifyName           // 
+    Pointer pDatatype             // A pointer to a null-terminated string that specifies the type of data used to record the print job.
+    Pointer pPrintProcessor       // 
+    Pointer pParameters           // 
+    Pointer pDriverName           // 
+    Pointer pDevMode              // 
+    Pointer pStatus               // A pointer to a null-terminated string that specifies the status of the print job. This member should be checked prior to Status and, if pStatus is NULL, the status is defined by the contents of the Status member.
+    Pointer pSecurityDescriptor   // 
+    UInteger uiStatus             // The job status. The value of this member can be zero or a combination of one or more of the following values. A value of zero indicates that the print queue was paused after the document finished spooling.
+    UInteger uiPriority           // The job priority. This member can be one of the following values or in the range between 1 through 99 (MIN_PRIORITY through MAX_PRIORITY).
+    UInteger uiPosition           // The job's position in the print queue.
+    UInteger uiStartTime          // 
+    UInteger uiUntilTime          // 
+    UInteger uiTotalPages         // The total number of pages that the document contains. This value may be zero if the print job does not contain page delimiting information.
+    UInteger uiSize               // 
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment2
+#ENDIF
+    tWinSystemTime tsSubmitted    // Specifies the time that this document was spooled.
+    UInteger uiTime               // 
+    UInteger uiPagesPrinted       // The number of pages that have printed. This value may be zero if the print job does not contain page delimiting information.
+    UInteger uiSizeHigh           // 
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment3
+#ENDIF
+End_Struct
+

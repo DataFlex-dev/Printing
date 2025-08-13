@@ -1,0 +1,11 @@
+﻿// https://docs.microsoft.com/en-us/windows/win32/printdocs/printer-info-4
+
+{ Name = Printer_Info_4 }
+Struct tWinPrinter_Info_4
+    Pointer pPrinterName
+    Pointer pServerName
+    UInteger Attributes
+#IFDEF IS$Win64
+    UInteger _MissingAlignment
+#ENDIF
+End_Struct

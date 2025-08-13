@@ -1,0 +1,3 @@
+External_Function WinAPI_ClosePrinter "ClosePrinter" Winspool.drv ;
+    Handle pPrinter ;
+    Returns Integer

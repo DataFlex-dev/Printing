@@ -1,0 +1,26 @@
+﻿// https://docs.microsoft.com/en-us/windows/win32/printdocs/printer-info-2
+
+{ Name = Printer_Info_2 }
+Struct tWinPrinter_Info_2
+    Pointer pServerName
+    Pointer pPrinterName
+    Pointer pShareName
+    Pointer pPortName
+    Pointer pDriverName
+    Pointer pComment
+    Pointer pLocation
+    Pointer pDevMode
+    Pointer pSepFile
+    Pointer pPrintProcessor
+    Pointer pDatatype
+    Pointer pParameters
+    Pointer pSecurityDescriptor
+    UInteger Attributes
+    UInteger Priority
+    UInteger DefaultPriority
+    UInteger StartTime
+    UInteger UntilTime
+    UInteger Status
+    UInteger cJobs
+    UInteger AveragePPM
+End_Struct

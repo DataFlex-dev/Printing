@@ -1,0 +1,27 @@
+﻿Use VdfBase.pkg
+Use tPrinterInfo_DevMode.pkg
+
+// This struct is not used in Windows API calls so all strings are DataFlex strings
+Struct tPrinterInfo
+    String sServerName
+    String sPrinterName
+    String sShareName
+    String sPortName
+    String sDriverName
+    String sComment
+    String sLocation
+    tPrinterInfo_DevMode DevMode
+    String sSepFile
+    String sPrintProcessor
+    String sDatatype
+    String sParameters
+    Pointer pSecurityDescriptor
+    UInteger uiAttributes
+    UInteger uiPriority
+    UInteger uiDefaultPriority
+    Time tmStartTime
+    Time tmUntilTime
+    UInteger uiStatus
+    UInteger uicJobs
+    UInteger uiAveragePPM
+End_Struct

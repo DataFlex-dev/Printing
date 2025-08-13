@@ -1,0 +1,21 @@
+﻿Function WStringPointerToMultiString Global Pointer pData Returns String[]
+    Integer iOffSet
+    String[] sResult
+    Boolean bStop
+
+    Repeat
+        Move (iOffSet + 2) to iOffset
+        If (DeRefW (pData, iOffSet) = 0) Begin
+            Move (PointerToWString (pData)) to sResult[SizeOfArray (sResult)]
+            If (DeRefDw (pData, iOffSet) = 0) Begin
+                Move True to bStop
+            End
+            Else Begin
+                Move (pData + iOffset + 2) to pData
+                Move 0 to iOffset
+            End
+        End
+    Until (bStop)
+
+    Function_Return sResult
+End_Function

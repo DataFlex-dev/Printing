@@ -1,0 +1,6 @@
+﻿{ Name = Job_Info_3 }
+Struct tWinJob_Info_3
+    UInteger JobId
+    UInteger NextJobId
+    UInteger Reserved
+End_Struct

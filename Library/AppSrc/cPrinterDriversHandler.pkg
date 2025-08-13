@@ -1,0 +1,232 @@
+﻿Use tPrinterDriverInfo.pkg
+Use EnumPrinterDrivers.h.pkg
+Use WStringPointerToMultiString.pkg
+
+Use Classes\cDateTimeHandler.pkg
+
+Class cPrinterDriversHandler is a cObject
+    Procedure Construct_Object
+        Forward Send Construct_Object
+
+        { DesignTime = False }
+        { Description = "Array of driverinfo structs" }
+        Property tPrinterDriverInfo[] pDriversInfo
+
+        Object oDateTimeHandler is a cDateTimeHandler
+        End_Object
+    End_Procedure
+
+    Function DriverAttributesText Integer iDriver Returns String[]
+        tPrinterDriverInfo[] DriversInfo
+        String[] sTexts
+
+        Get pDriversInfo to DriversInfo
+
+        If (IsFlagIn (PRINTER_DRIVER_PACKAGE_AWARE, DriversInfo[iDriver].uiDriverAttributes)) Begin
+            Move C_$PRINTER_DRIVER_PACKAGE_AWARE to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_DRIVER_XPS, DriversInfo[iDriver].uiDriverAttributes)) Begin
+            Move C_$PRINTER_DRIVER_XPS to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_DRIVER_SANDBOX_ENABLED, DriversInfo[iDriver].uiDriverAttributes)) Begin
+            Move C_$PRINTER_DRIVER_SANDBOX_ENABLED to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_DRIVER_CLASS, DriversInfo[iDriver].uiDriverAttributes)) Begin
+            Move C_$PRINTER_DRIVER_CLASS to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_DRIVER_DERIVED, DriversInfo[iDriver].uiDriverAttributes)) Begin
+            Move C_$PRINTER_DRIVER_DERIVED to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_DRIVER_NOT_SHAREABLE, DriversInfo[iDriver].uiDriverAttributes)) Begin
+            Move C_$PRINTER_DRIVER_NOT_SHAREABLE to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_DRIVER_CATEGORY_FAX, DriversInfo[iDriver].uiDriverAttributes)) Begin
+            Move C_$PRINTER_DRIVER_CATEGORY_FAX to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_DRIVER_CATEGORY_FILE, DriversInfo[iDriver].uiDriverAttributes)) Begin
+            Move C_$PRINTER_DRIVER_CATEGORY_FILE to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_DRIVER_CATEGORY_VIRTUAL, DriversInfo[iDriver].uiDriverAttributes)) Begin
+            Move C_$PRINTER_DRIVER_CATEGORY_VIRTUAL to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_DRIVER_CATEGORY_SERVICE, DriversInfo[iDriver].uiDriverAttributes)) Begin
+            Move C_$PRINTER_DRIVER_CATEGORY_SERVICE to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_DRIVER_SOFT_RESET_REQUIRED, DriversInfo[iDriver].uiDriverAttributes)) Begin
+            Move C_$PRINTER_DRIVER_SOFT_RESET_REQUIRED to sTexts[SizeOfArray (sTexts)]
+        End
+
+        Function_Return sTexts
+    End_Function
+
+    Procedure EnumPrinterDrivers WString wServerName WString wEnvironment Integer eInfoType
+        Integer iSizeNeeded iReturned iRetval iDriver iDrivers
+        Address aDriversInfo
+        tPrinterDriverInfo[] DriversInfo
+
+        tWinDriver_Info_1[] WinDriversInfo1
+        tWinDriver_Info_2[] WinDriversInfo2
+        tWinDriver_Info_3[] WinDriversInfo3
+        tWinDriver_Info_4[] WinDriversInfo4
+        tWinDriver_Info_5[] WinDriversInfo5
+        tWinDriver_Info_6[] WinDriversInfo6
+        tWinDriver_Info_8[] WinDriversInfo8
+
+        Move 0 to iSizeNeeded
+        Move 0 to iReturned
+
+        Move (WinAPI_EnumPrinterDrivers (AddressOf (wServerName), AddressOf (wEnvironment), eInfoType, 0, 0, AddressOf (iSizeNeeded), AddressOf (iReturned))) to iRetval
+        If (iRetval = 0 and iSizeNeeded > 0) Begin
+            Move (Alloc (iSizeNeeded)) to aDriversInfo
+            Move (WinAPI_EnumPrinterDrivers (AddressOf (wServerName), AddressOf (wEnvironment), eInfoType, aDriversInfo, iSizeNeeded, AddressOf (iSizeNeeded), AddressOf (iReturned))) to iRetval
+
+            If (iRetval > 0) Begin
+                Move (ResizeArray (DriversInfo, iReturned)) to DriversInfo
+                Case Begin
+                    Case (eInfoType = C_DRIVER_INFO_1)
+                        Move (ResizeArray (WinDriversInfo1, iReturned)) to WinDriversInfo1
+                        Move (MemCopy (AddressOf (WinDriversInfo1), aDriversInfo, iReturned * SizeOfType (tWinDriver_Info_1))) to iRetval
+                        Move (iReturned - 1) to iDrivers
+                        For iDriver from 0 to iDrivers
+                            Move (PointerToWString (WinDriversInfo1[iDriver].pName)) to DriversInfo[iDriver].sName
+                        Loop
+                        Case Break
+                    Case (eInfoType = C_DRIVER_INFO_2)
+                        Move (ResizeArray (WinDriversInfo2, iReturned)) to WinDriversInfo2
+                        Move (MemCopy (AddressOf (WinDriversInfo2), aDriversInfo, iReturned * SizeOfType (tWinDriver_Info_2))) to iRetval
+                        Move (iReturned - 1) to iDrivers
+                        For iDriver from 0 to iDrivers
+                            Move WinDriversInfo2[iDriver].cVersion to DriversInfo[iDriver].cVersion
+                            Move (PointerToWString (WinDriversInfo2[iDriver].pName)) to DriversInfo[iDriver].sName
+                            Move (PointerToWString (WinDriversInfo2[iDriver].pEnvironment)) to DriversInfo[iDriver].sEnvironment
+                            Move (PointerToWString (WinDriversInfo2[iDriver].pDriverPath)) to DriversInfo[iDriver].sDriverPath
+                            Move (PointerToWString (WinDriversInfo2[iDriver].pDataFile)) to DriversInfo[iDriver].sDataFile
+                            Move (PointerToWString (WinDriversInfo2[iDriver].pConfigFile)) to DriversInfo[iDriver].sConfigFile
+                        Loop
+                        Case Break
+                    Case (eInfoType = C_DRIVER_INFO_3)
+                        Move (ResizeArray (WinDriversInfo3, iReturned)) to WinDriversInfo3
+                        Move (MemCopy (AddressOf (WinDriversInfo3), aDriversInfo, iReturned * SizeOfType (tWinDriver_Info_3))) to iRetval
+                        Move (iReturned - 1) to iDrivers
+                        For iDriver from 0 to iDrivers
+                            Move WinDriversInfo3[iDriver].cVersion to DriversInfo[iDriver].cVersion
+                            Move (PointerToWString (WinDriversInfo3[iDriver].pName)) to DriversInfo[iDriver].sName
+                            Move (PointerToWString (WinDriversInfo3[iDriver].pEnvironment)) to DriversInfo[iDriver].sEnvironment
+                            Move (PointerToWString (WinDriversInfo3[iDriver].pDriverPath)) to DriversInfo[iDriver].sDriverPath
+                            Move (PointerToWString (WinDriversInfo3[iDriver].pDataFile)) to DriversInfo[iDriver].sDataFile
+                            Move (PointerToWString (WinDriversInfo3[iDriver].pConfigFile)) to DriversInfo[iDriver].sConfigFile
+                            Move (PointerToWString (WinDriversInfo3[iDriver].pHelpFile)) to DriversInfo[iDriver].sHelpFile
+                            Move (WStringPointerToMultiString (WinDriversInfo3[iDriver].pDependentFiles)) to DriversInfo[iDriver].sDependentFiles
+                            Move (PointerToWString (WinDriversInfo3[iDriver].pMonitorName)) to DriversInfo[iDriver].sMonitorName
+                            Move (PointerToWString (WinDriversInfo3[iDriver].pDefaultDataType)) to DriversInfo[iDriver].sDefaultDataType
+                        Loop
+                        Case Break
+                    Case (eInfoType = C_DRIVER_INFO_4)
+                        Move (ResizeArray (WinDriversInfo4, iReturned)) to WinDriversInfo4
+                        Move (MemCopy (AddressOf (WinDriversInfo4), aDriversInfo, iReturned * SizeOfType (tWinDriver_Info_4))) to iRetval
+                        Move (iReturned - 1) to iDrivers
+                        For iDriver from 0 to iDrivers
+                            Move WinDriversInfo4[iDriver].cVersion to DriversInfo[iDriver].cVersion
+                            Move (PointerToWString (WinDriversInfo4[iDriver].pName)) to DriversInfo[iDriver].sName
+                            Move (PointerToWString (WinDriversInfo4[iDriver].pEnvironment)) to DriversInfo[iDriver].sEnvironment
+                            Move (PointerToWString (WinDriversInfo4[iDriver].pDriverPath)) to DriversInfo[iDriver].sDriverPath
+                            Move (PointerToWString (WinDriversInfo4[iDriver].pDataFile)) to DriversInfo[iDriver].sDataFile
+                            Move (PointerToWString (WinDriversInfo4[iDriver].pConfigFile)) to DriversInfo[iDriver].sConfigFile
+                            Move (PointerToWString (WinDriversInfo4[iDriver].pHelpFile)) to DriversInfo[iDriver].sHelpFile
+                            Move (WStringPointerToMultiString (WinDriversInfo4[iDriver].pDependentFiles)) to DriversInfo[iDriver].sDependentFiles
+                            Move (PointerToWString (WinDriversInfo4[iDriver].pMonitorName)) to DriversInfo[iDriver].sMonitorName
+                            Move (PointerToWString (WinDriversInfo4[iDriver].pDefaultDataType)) to DriversInfo[iDriver].sDefaultDataType
+                            Move (WStringPointerToMultiString (WinDriversInfo4[iDriver].pszzPreviousNames)) to DriversInfo[iDriver].sPreviousNames
+                        Loop
+                        Case Break
+                    Case (eInfoType = C_DRIVER_INFO_5)
+                        Move (ResizeArray (WinDriversInfo5, iReturned)) to WinDriversInfo5
+                        Move (MemCopy (AddressOf (WinDriversInfo5), aDriversInfo, iReturned * SizeOfType (tWinDriver_Info_5))) to iRetval
+                        Move (iReturned - 1) to iDrivers
+                        For iDriver from 0 to iDrivers
+                            Move WinDriversInfo5[iDriver].cVersion to DriversInfo[iDriver].cVersion
+                            Move (PointerToWString (WinDriversInfo5[iDriver].pName)) to DriversInfo[iDriver].sName
+                            Move (PointerToWString (WinDriversInfo5[iDriver].pEnvironment)) to DriversInfo[iDriver].sEnvironment
+                            Move (PointerToWString (WinDriversInfo5[iDriver].pDriverPath)) to DriversInfo[iDriver].sDriverPath
+                            Move (PointerToWString (WinDriversInfo5[iDriver].pDataFile)) to DriversInfo[iDriver].sDataFile
+                            Move (PointerToWString (WinDriversInfo5[iDriver].pConfigFile)) to DriversInfo[iDriver].sConfigFile
+                            Move WinDriversInfo5[iDriver].dwDriverAttributes to DriversInfo[iDriver].uiDriverAttributes
+                            Move WinDriversInfo5[iDriver].dwConfigVersion to DriversInfo[iDriver].uiConfigVersion
+                            Move WinDriversInfo5[iDriver].dwDriverVersion to DriversInfo[iDriver].uiDriverVersion
+                        Loop
+                        Case Break
+                    Case (eInfoType = C_DRIVER_INFO_6)
+                        Move (ResizeArray (WinDriversInfo6, iReturned)) to WinDriversInfo6
+                        Move (MemCopy (AddressOf (WinDriversInfo6), aDriversInfo, iReturned * SizeOfType (tWinDriver_Info_6))) to iRetval
+                        Move (iReturned - 1) to iDrivers
+                        For iDriver from 0 to iDrivers
+                            Move WinDriversInfo6[iDriver].cVersion to DriversInfo[iDriver].cVersion
+                            Move (PointerToWString (WinDriversInfo6[iDriver].pName)) to DriversInfo[iDriver].sName
+                            Move (PointerToWString (WinDriversInfo6[iDriver].pEnvironment)) to DriversInfo[iDriver].sEnvironment
+                            Move (PointerToWString (WinDriversInfo6[iDriver].pDriverPath)) to DriversInfo[iDriver].sDriverPath
+                            Move (PointerToWString (WinDriversInfo6[iDriver].pDataFile)) to DriversInfo[iDriver].sDataFile
+                            Move (PointerToWString (WinDriversInfo6[iDriver].pConfigFile)) to DriversInfo[iDriver].sConfigFile
+                            Move (PointerToWString (WinDriversInfo6[iDriver].pHelpFile)) to DriversInfo[iDriver].sHelpFile
+                            Move (WStringPointerToMultiString (WinDriversInfo6[iDriver].pDependentFiles)) to DriversInfo[iDriver].sDependentFiles
+                            Move (PointerToWString (WinDriversInfo6[iDriver].pMonitorName)) to DriversInfo[iDriver].sMonitorName
+                            Move (PointerToWString (WinDriversInfo6[iDriver].pDefaultDataType)) to DriversInfo[iDriver].sDefaultDataType
+                            Move (WStringPointerToMultiString (WinDriversInfo6[iDriver].pszzPreviousNames)) to DriversInfo[iDriver].sPreviousNames
+                            Get FileTimeToDateTime of oDateTimeHandler WinDriversInfo6[iDriver].ftDriverDate to DriversInfo[iDriver].dtDriverDateTime
+                            Move WinDriversInfo6[iDriver].dwlDriverVersion to DriversInfo[iDriver].uiDriverVersion
+                            Move (PointerToWString (WinDriversInfo6[iDriver].pszMfgName)) to DriversInfo[iDriver].sMfgName
+                            Move (PointerToWString (WinDriversInfo6[iDriver].pszOEMUrl)) to DriversInfo[iDriver].sOEMUrl
+                            Move (PointerToWString (WinDriversInfo6[iDriver].pszHardwareID)) to DriversInfo[iDriver].sHardwareID
+                            Move (PointerToWString (WinDriversInfo6[iDriver].pszProvider)) to DriversInfo[iDriver].sProvider
+                        Loop
+                        Case Break
+                    Case (eInfoType = C_DRIVER_INFO_8)
+                        Move (ResizeArray (WinDriversInfo8, iReturned)) to WinDriversInfo8
+                        Move (MemCopy (AddressOf (WinDriversInfo8), aDriversInfo, iReturned * SizeOfType (tWinDriver_Info_8))) to iRetval
+                        Move (iReturned - 1) to iDrivers
+                        For iDriver from 0 to iDrivers
+                            Move WinDriversInfo8[iDriver].cVersion to DriversInfo[iDriver].cVersion
+                            Move (PointerToWString (WinDriversInfo8[iDriver].pName)) to DriversInfo[iDriver].sName
+                            Move (PointerToWString (WinDriversInfo8[iDriver].pEnvironment)) to DriversInfo[iDriver].sEnvironment
+                            Move (PointerToWString (WinDriversInfo8[iDriver].pDriverPath)) to DriversInfo[iDriver].sDriverPath
+                            Move (PointerToWString (WinDriversInfo8[iDriver].pDataFile)) to DriversInfo[iDriver].sDataFile
+                            Move (PointerToWString (WinDriversInfo8[iDriver].pConfigFile)) to DriversInfo[iDriver].sConfigFile
+                            Move (PointerToWString (WinDriversInfo8[iDriver].pHelpFile)) to DriversInfo[iDriver].sHelpFile
+                            Move (WStringPointerToMultiString (WinDriversInfo8[iDriver].pDependentFiles)) to DriversInfo[iDriver].sDependentFiles
+                            Move (PointerToWString (WinDriversInfo8[iDriver].pMonitorName)) to DriversInfo[iDriver].sMonitorName
+                            Move (PointerToWString (WinDriversInfo8[iDriver].pDefaultDataType)) to DriversInfo[iDriver].sDefaultDataType
+                            Move (WStringPointerToMultiString (WinDriversInfo8[iDriver].pszzPreviousNames)) to DriversInfo[iDriver].sPreviousNames
+                            Get FileTimeToDateTime of oDateTimeHandler WinDriversInfo8[iDriver].ftDriverDate to DriversInfo[iDriver].dtDriverDateTime
+                            Move WinDriversInfo8[iDriver].dwlDriverVersion to DriversInfo[iDriver].uiDriverVersion
+                            Move (PointerToWString (WinDriversInfo8[iDriver].pszMfgName)) to DriversInfo[iDriver].sMfgName
+                            Move (PointerToWString (WinDriversInfo8[iDriver].pszOEMUrl)) to DriversInfo[iDriver].sOEMUrl
+                            Move (PointerToWString (WinDriversInfo8[iDriver].pszHardwareID)) to DriversInfo[iDriver].sHardwareID
+                            Move (PointerToWString (WinDriversInfo8[iDriver].pszProvider)) to DriversInfo[iDriver].sProvider
+                            Move (PointerToWString (WinDriversInfo8[iDriver].pszVendorSetup)) to DriversInfo[iDriver].sVendorSetup
+                            Move (WStringPointerToMultiString (WinDriversInfo8[iDriver].pszzColorProfiles)) to DriversInfo[iDriver].sColorProfiles
+                            Move (PointerToWString (WinDriversInfo8[iDriver].pszInfPath)) to DriversInfo[iDriver].sInfPath
+                            Move WinDriversInfo8[iDriver].dwPrinterDriverAttributes to DriversInfo[iDriver].uiDriverAttributes
+                            Move (WStringPointerToMultiString (WinDriversInfo8[iDriver].pszzCoreDriverDependencies)) to DriversInfo[iDriver].sCoreDriverDependencies
+                            Get FileTimeToDateTime of oDateTimeHandler WinDriversInfo8[iDriver].ftMinInboxDriverVerDate to DriversInfo[iDriver].dtMinInboxDriverVerDate
+                            Move WinDriversInfo8[iDriver].dwlMinInboxDriverVerVersion to DriversInfo[iDriver].uiMinInboxDriverVerVersion
+                        Loop
+                        Case Break
+                Case End
+            End
+
+            Set pDriversInfo to DriversInfo
+
+            Move (Free (aDriversInfo)) to iRetval
+        End
+    End_Procedure
+End_Class
+

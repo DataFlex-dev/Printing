@@ -1,0 +1,19 @@
+﻿Use tWinForm_Info_1.pkg
+Use tWinForm_Info_2.pkg
+Use tPrinterFormInfo.pkg
+
+External_Function WinAPI_EnumForms "EnumFormsW" Winspool.drv ;
+    Handle hPrinter ;
+    UInteger uiLevel ;
+    Pointer pForm ;
+    Uinteger cbBuf ;
+    Pointer pcbNeeded ;
+    Pointer pcReturned ;
+    Returns Integer
+
+Define FORM_USER       for |CI$00000000
+Define FORM_BUILTIN    for |CI$00000001
+Define FORM_PRINTER    for |CI$00000002
+
+Define C_ENUMFORMS_TYPE_1 for 1 // tells EnumForms to return tForm_Info_1 info
+Define C_ENUMFORMS_TYPE_2 for 2 // tells EnumForms to return tForm_Info_2 info

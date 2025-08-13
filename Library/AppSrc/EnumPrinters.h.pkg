@@ -1,0 +1,397 @@
+﻿Define PRINTER_ENUM_DEFAULT         for |CI$00000001
+Define PRINTER_ENUM_LOCAL           for |CI$00000002
+Define PRINTER_ENUM_CONNECTIONS     for |CI$00000004
+Define PRINTER_ENUM_FAVORITE        for |CI$00000004
+Define PRINTER_ENUM_NAME            for |CI$00000008
+Define PRINTER_ENUM_REMOTE          for |CI$00000010
+Define PRINTER_ENUM_SHARED          for |CI$00000020
+Define PRINTER_ENUM_NETWORK         for |CI$00000040
+Define PRINTER_ENUM_EXPAND          for |CI$00004000
+Define PRINTER_ENUM_CONTAINER       for |CI$00008000
+Define PRINTER_ENUM_ICONMASK        for |CI$00ff0000
+Define PRINTER_ENUM_ICON1           for |CI$00010000
+Define PRINTER_ENUM_ICON2           for |CI$00020000
+Define PRINTER_ENUM_ICON3           for |CI$00040000
+Define PRINTER_ENUM_ICON4           for |CI$00080000
+Define PRINTER_ENUM_ICON5           for |CI$00100000
+Define PRINTER_ENUM_ICON6           for |CI$00200000
+Define PRINTER_ENUM_ICON7           for |CI$00400000
+Define PRINTER_ENUM_ICON8           for |CI$00800000
+Define PRINTER_ENUM_HIDE            for |CI$01000000
+Define PRINTER_ENUM_CATEGORY_ALL    for |CI$02000000
+Define PRINTER_ENUM_CATEGORY_3D     for |CI$04000000
+
+Define PRINTER_STATUS_PAUSED            For |CI$00000001
+Define PRINTER_STATUS_ERROR             For |CI$00000002
+Define PRINTER_STATUS_PENDING_DELETION  For |CI$00000004
+Define PRINTER_STATUS_PAPER_JAM         For |CI$00000008
+Define PRINTER_STATUS_PAPER_OUT         For |CI$00000010
+Define PRINTER_STATUS_MANUAL_FEED       For |CI$00000020
+Define PRINTER_STATUS_PAPER_PROBLEM     For |CI$00000040
+Define PRINTER_STATUS_OFFLINE           For |CI$00000080
+Define PRINTER_STATUS_IO_ACTIVE         For |CI$00000100
+Define PRINTER_STATUS_BUSY              For |CI$00000200
+Define PRINTER_STATUS_PRINTING          For |CI$00000400
+Define PRINTER_STATUS_OUTPUT_BIN_FULL   For |CI$00000800
+Define PRINTER_STATUS_NOT_AVAILABLE     For |CI$00001000
+Define PRINTER_STATUS_WAITING           For |CI$00002000
+Define PRINTER_STATUS_PROCESSING        For |CI$00004000
+Define PRINTER_STATUS_INITIALIZING      For |CI$00008000
+Define PRINTER_STATUS_WARMING_UP        For |CI$00010000
+Define PRINTER_STATUS_TONER_LOW         For |CI$00020000
+Define PRINTER_STATUS_NO_TONER          For |CI$00040000
+Define PRINTER_STATUS_PAGE_PUNT         For |CI$00080000
+Define PRINTER_STATUS_USER_INTERVENTION For |CI$00100000
+Define PRINTER_STATUS_OUT_OF_MEMORY     For |CI$00200000
+Define PRINTER_STATUS_DOOR_OPEN         For |CI$00400000
+Define PRINTER_STATUS_SERVER_UNKNOWN    For |CI$00800000
+Define PRINTER_STATUS_POWER_SAVE        For |CI$01000000
+
+Define PRINTER_ATTRIBUTE_QUEUED     for |CI$00000001
+Define PRINTER_ATTRIBUTE_DIRECT     for |CI$00000002
+Define PRINTER_ATTRIBUTE_DEFAULT    for |CI$00000004
+Define PRINTER_ATTRIBUTE_SHARED     for |CI$00000008
+Define PRINTER_ATTRIBUTE_NETWORK    for |CI$00000010
+Define PRINTER_ATTRIBUTE_HIDDEN     for |CI$00000020
+Define PRINTER_ATTRIBUTE_LOCAL      for |CI$00000040
+
+Define PRINTER_ATTRIBUTE_ENABLE_DEVQ       for |CI$00000080
+Define PRINTER_ATTRIBUTE_KEEPPRINTEDJOBS   for |CI$00000100
+Define PRINTER_ATTRIBUTE_DO_COMPLETE_FIRST for |CI$00000200
+
+Define PRINTER_ATTRIBUTE_WORK_OFFLINE   for |CI$00000400
+Define PRINTER_ATTRIBUTE_ENABLE_BIDI    for |CI$00000800
+Define PRINTER_ATTRIBUTE_RAW_ONLY       for |CI$00001000
+Define PRINTER_ATTRIBUTE_PUBLISHED      for |CI$00002000
+Define PRINTER_ATTRIBUTE_FAX            for |CI$00004000
+Define PRINTER_ATTRIBUTE_TS             for |CI$00008000
+
+// The printer attribute pushed xxx bits below are used by the
+// pushing printer connection code to keep track of the type
+// of printer connection.  These bits are per user resources
+// hence the local print provider has no knowledge about these
+// bit and will not accepts them.  The remote print provider
+// is responsible for storeing and persisting these bits.
+Define PRINTER_ATTRIBUTE_PUSHED_USER    for |CI$00020000
+Define PRINTER_ATTRIBUTE_PUSHED_MACHINE for |CI$00040000
+Define PRINTER_ATTRIBUTE_MACHINE        for |CI$00080000
+
+Define PRINTER_ATTRIBUTE_FRIENDLY_NAME  for |CI$00100000
+
+// If the redirected TS printer is installed with generic
+// TS printer driver (TSPRINT.dll) then this attribute is set
+// by the UMRDP service and passed on to the spooler
+Define PRINTER_ATTRIBUTE_TS_GENERIC_DRIVER for |CI$00200000
+
+// Defines a bit allowing a local queue to be installed as a
+// "per-user" queue that is only usable/enumerable by that user.
+Define PRINTER_ATTRIBUTE_PER_USER   for |CI$00400000
+
+// Defines a bit indicating that a queue is an enterprise
+// cloud print queue.
+Define PRINTER_ATTRIBUTE_ENTERPRISE_CLOUD   for |CI$00800000
+
+Define C_$PRINTER_ATTRIBUTE_DEFAULT             for "Indicates the printer is the default printer in the system"
+Define C_$PRINTER_ATTRIBUTE_DIRECT              for "Job is sent directly to the printer (it is not spooled)"
+Define C_$PRINTER_ATTRIBUTE_DO_COMPLETE_FIRST   for "If set and printer is set for print-while-spooling, any jobs that have completed spooling are scheduled to print before jobs that have not completed spooling"
+Define C_$PRINTER_ATTRIBUTE_ENABLE_BIDI         for "Indicates whether bi-directional communications are enabled for the printer"
+Define C_$PRINTER_ATTRIBUTE_ENABLE_DEVQ         for "If set, DevQueryPrint is called. DevQueryPrint may fail if the document and printer setups do not match. Setting this flag causes mismatched documents to be held in the queue"
+Define C_$PRINTER_ATTRIBUTE_FAX                 for "If set, printer is a fax printer. This can only be set by AddPrinter, but it can be retrieved by EnumPrinters and GetPrinter"
+Define C_$PRINTER_ATTRIBUTE_FRIENDLY_NAME       for "A computer has connected to this printer and given it a friendly name"
+Define C_$PRINTER_ATTRIBUTE_HIDDEN              for "Reserved."
+Define C_$PRINTER_ATTRIBUTE_KEEPPRINTEDJOBS     for "If set, jobs are kept after they are printed. If unset, jobs are deleted"
+Define C_$PRINTER_ATTRIBUTE_LOCAL               for "Printer is a local printer."
+Define C_$PRINTER_ATTRIBUTE_MACHINE             for "Printer is a per-machine connection"
+Define C_$PRINTER_ATTRIBUTE_NETWORK             for "Printer is a network printer connection"
+Define C_$PRINTER_ATTRIBUTE_PUBLISHED           for "Indicates whether the printer is published in the directory service"
+Define C_$PRINTER_ATTRIBUTE_PUSHED_USER         for "The printer was was installed by using the Push Printer Connections user policy. See Step-by-Step Guide for Print Management"
+Define C_$PRINTER_ATTRIBUTE_PUSHED_MACHINE      for "The printer was installed by using the Push Printer Connections computer policy. See Step-by-Step Guide for Print Management"
+Define C_$PRINTER_ATTRIBUTE_QUEUED              for "If set, the printer spools and starts printing after the last page is spooled. If not set and PRINTER_ATTRIBUTE_DIRECT is not set, the printer spools and prints while spooling"
+Define C_$PRINTER_ATTRIBUTE_RAW_ONLY            for "Indicates that only raw data type print jobs can be spooled"
+Define C_$PRINTER_ATTRIBUTE_SHARED              for "Printer is shared"
+Define C_$PRINTER_ATTRIBUTE_WORK_OFFLINE        for "Indicates whether the printer is currently connected. If the printer is not currently connected, print jobs will continue to spool"
+
+// DEVMODE.dmDeviceName length constant
+Define CCHDEVICENAME For 32
+
+// DEVMODE.dmFormName length constant
+Define CCHFORMNAME For 32
+
+// DEVMODE.dmFields constants
+Define DM_ORIENTATION       For |CI$00000001
+Define DM_PAPERSIZE         For |CI$00000002
+Define DM_PAPERLENGTH       For |CI$00000004
+Define DM_PAPERWIDTH        For |CI$00000008
+Define DM_SCALE             For |CI$00000010
+Define DM_POSITION          For |CI$00000020
+Define DM_COPIES            For |CI$00000100
+Define DM_DEFAULTSOURCE     For |CI$00000200
+Define DM_PRINTQUALITY      For |CI$00000400
+Define DM_COLOR             For |CI$00000800
+Define DM_DUPLEX            For |CI$00001000
+Define DM_YRESOLUTION       For |CI$00002000
+Define DM_TTOPTION          For |CI$00004000
+Define DM_COLLATE           For |CI$00008000
+Define DM_FORMNAME          For |CI$00010000
+Define DM_LOGPIXELS         For |CI$00020000
+Define DM_BITSPERPEL        For |CI$00040000
+Define DM_PELSWIDTH         For |CI$00080000
+Define DM_PELSHEIGHT        For |CI$00100000
+Define DM_DISPLAYFLAGS      For |CI$00200000
+Define DM_DISPLAYFREQUENCY  For |CI$00400000
+Define DM_ICMMETHOD         For |CI$00800000
+Define DM_ICMINTENT         For |CI$01000000
+Define DM_MEDIATYPE         For |CI$02000000
+Define DM_DITHERTYPE        For |CI$04000000
+Define DM_PANNINGWIDTH      For |CI$08000000
+Define DM_PANNINGHEIGHT     For |CI$10000000
+
+// DEVMODE.dmOrientation constants
+Define DMORIENT_PORTRAIT    For 1
+Define DMORIENT_LANDSCAPE   For 2
+
+// DEVMODE.dmPaperSize constants
+Define DMPAPER_LETTER                           For 1   // Letter 8 1/2 x 11 in
+Define DMPAPER_LETTERSMALL                      For 2   // Letter Small 8 1/2 x 11 in
+Define DMPAPER_TABLOID                          For 3   // Tabloid 11 x 17 in
+Define DMPAPER_LEDGER                           For 4   // Ledger 17 x 11 in
+Define DMPAPER_LEGAL                            For 5   // Legal 8 1/2 x 14 in
+Define DMPAPER_STATEMENT                        For 6   // Statement 5 1/2 x 8 1/2 in
+Define DMPAPER_EXECUTIVE                        For 7   // Executive 7 1/4 x 10 1/2 in
+Define DMPAPER_A3                               For 8   // A3 297 x 420 mm
+Define DMPAPER_A4                               For 9   // A4 210 x 297 mm
+Define DMPAPER_A4SMALL                          For 10  // A4 Small 210 x 297 mm
+Define DMPAPER_A5                               For 11  // A5 148 x 210 mm
+Define DMPAPER_B4                               For 12  // B4 (JIS) 250 x 354
+Define DMPAPER_B5                               For 13  // B5 (JIS) 182 x 257 mm
+Define DMPAPER_FOLIO                            For 14  // Folio 8 1/2 x 13 in
+Define DMPAPER_QUARTO                           For 15  // Quarto 215 x 275 mm
+Define DMPAPER_10X14                            For 16  // 10x14 in
+Define DMPAPER_11X17                            For 17  // 11x17 in
+Define DMPAPER_NOTE                             For 18  // Note 8 1/2 x 11 in
+Define DMPAPER_ENV_9                            For 19  // Envelope #9 3 7/8 x 8 7/8
+Define DMPAPER_ENV_10                           For 20  // Envelope #10 4 1/8 x 9 1/2
+Define DMPAPER_ENV_11                           For 21  // Envelope #11 4 1/2 x 10 3/8
+Define DMPAPER_ENV_12                           For 22  // Envelope #12 4 \276 x 11
+Define DMPAPER_ENV_14                           For 23  // Envelope #14 5 x 11 1/2
+Define DMPAPER_CSHEET                           For 24  // C size sheet
+Define DMPAPER_DSHEET                           For 25  // D size sheet
+Define DMPAPER_ESHEET                           For 26  // E size sheet
+Define DMPAPER_ENV_DL                           For 27  // Envelope DL 110 x 220mm
+Define DMPAPER_ENV_C5                           For 28  // Envelope C5 162 x 229 mm
+Define DMPAPER_ENV_C3                           For 29  // Envelope C3  324 x 458 mm
+Define DMPAPER_ENV_C4                           For 30  // Envelope C4  229 x 324 mm
+Define DMPAPER_ENV_C6                           For 31  // Envelope C6  114 x 162 mm
+Define DMPAPER_ENV_C65                          For 32  // Envelope C65 114 x 229 mm
+Define DMPAPER_ENV_B4                           For 33  // Envelope B4  250 x 353 mm
+Define DMPAPER_ENV_B5                           For 34  // Envelope B5  176 x 250 mm
+Define DMPAPER_ENV_B6                           For 35  // Envelope B6  176 x 125 mm
+Define DMPAPER_ENV_ITALY                        For 36  // Envelope 110 x 230 mm
+Define DMPAPER_ENV_MONARCH                      For 37  // Envelope Monarch 3.875 x 7.5 in
+Define DMPAPER_ENV_PERSONAL                     For 38  // 6 3/4 Envelope 3 5/8 x 6 1/2 in
+Define DMPAPER_FANFOLD_US                       For 39  // US Std Fanfold 14 7/8 x 11 in
+Define DMPAPER_FANFOLD_STD_GERMAN               For 40  // German Std Fanfold 8 1/2 x 12 in
+Define DMPAPER_FANFOLD_LGL_GERMAN               For 41  // German Legal Fanfold 8 1/2 x 13 in
+Define DMPAPER_ISO_B4                           For 42  // B4 (ISO) 250 x 353 mm
+Define DMPAPER_JAPANESE_POSTCARD                For 43  // Japanese Postcard 100 x 148 mm
+Define DMPAPER_9X11                             For 44  // 9 x 11 in
+Define DMPAPER_10X11                            For 45  // 10 x 11 in
+Define DMPAPER_15X11                            For 46  // 15 x 11 in
+Define DMPAPER_ENV_INVITE                       For 47  // Envelope Invite 220 x 220 mm
+Define DMPAPER_RESERVED_48                      For 48  // RESERVED--DO NOT USE
+Define DMPAPER_RESERVED_49                      For 49  // RESERVED--DO NOT USE
+Define DMPAPER_LETTER_EXTRA                     For 50  // Letter Extra 9 \275 x 12 in
+Define DMPAPER_LEGAL_EXTRA                      For 51  // Legal Extra 9 \275 x 15 in
+Define DMPAPER_TABLOID_EXTRA                    For 52  // Tabloid Extra 11.69 x 18 in
+Define DMPAPER_A4_EXTRA                         For 53  // A4 Extra 9.27 x 12.69 in
+Define DMPAPER_LETTER_TRANSVERSE                For 54  // Letter Transverse 8 \275 x 11 in
+Define DMPAPER_A4_TRANSVERSE                    For 55  // A4 Transverse 210 x 297 mm
+Define DMPAPER_LETTER_EXTRA_TRANSVERSE          For 56  // Letter Extra Transverse 9\275 x 12 in
+Define DMPAPER_A_PLUS                           For 57  // SuperA/SuperA/A4 227 x 356 mm
+Define DMPAPER_B_PLUS                           For 58  // SuperB/SuperB/A3 305 x 487 mm
+Define DMPAPER_LETTER_PLUS                      For 59  // Letter Plus 8.5 x 12.69 in
+Define DMPAPER_A4_PLUS                          For 60  // A4 Plus 210 x 330 mm
+Define DMPAPER_A5_TRANSVERSE                    For 61  // A5 Transverse 148 x 210 mm
+Define DMPAPER_B5_TRANSVERSE                    For 62  // B5 (JIS) Transverse 182 x 257 mm
+Define DMPAPER_A3_EXTRA                         For 63  // A3 Extra 322 x 445 mm
+Define DMPAPER_A5_EXTRA                         For 64  // A5 Extra 174 x 235 mm
+Define DMPAPER_B5_EXTRA                         For 65  // B5 (ISO) Extra 201 x 276 mm
+Define DMPAPER_A2                               For 66  // A2 420 x 594 mm
+Define DMPAPER_A3_TRANSVERSE                    For 67  // A3 Transverse 297 x 420 mm
+Define DMPAPER_A3_EXTRA_TRANSVERSE              For 68  // A3 Extra Transverse 322 x 445 mm
+Define DMPAPER_DBL_JAPANESE_POSTCARD            For 69  // Japanese Double Postcard 200 x 148 mm
+Define DMPAPER_A6                               For 70  // A6 105 x 148 mm
+Define DMPAPER_JENV_KAKU2                       For 71  // Japanese Envelope Kaku #2
+Define DMPAPER_JENV_KAKU3                       For 72  // Japanese Envelope Kaku #3
+Define DMPAPER_JENV_CHOU3                       For 73  // Japanese Envelope Chou #3
+Define DMPAPER_JENV_CHOU4                       For 74  // Japanese Envelope Chou #4
+Define DMPAPER_LETTER_ROTATED                   For 75  // Letter Rotated 11 x 8 1/2 11 in
+Define DMPAPER_A3_ROTATED                       For 76  // A3 Rotated 420 x 297 mm
+Define DMPAPER_A4_ROTATED                       For 77  // A4 Rotated 297 x 210 mm
+Define DMPAPER_A5_ROTATED                       For 78  // A5 Rotated 210 x 148 mm
+Define DMPAPER_B4_JIS_ROTATED                   For 79  // B4 (JIS) Rotated 364 x 257 mm
+Define DMPAPER_B5_JIS_ROTATED                   For 80  // B5 (JIS) Rotated 257 x 182 mm
+Define DMPAPER_JAPANESE_POSTCARD_ROTATED        For 81  // Japanese Postcard Rotated 148 x 100 mm
+Define DMPAPER_DBL_JAPANESE_POSTCARD_ROTATED    For 82  // Double Japanese Postcard Rotated 148 x 200 mm
+Define DMPAPER_A6_ROTATED                       For 83  // A6 Rotated 148 x 105 mm
+Define DMPAPER_JENV_KAKU2_ROTATED               For 84  // Japanese Envelope Kaku #2 Rotated
+Define DMPAPER_JENV_KAKU3_ROTATED               For 85  // Japanese Envelope Kaku #3 Rotated
+Define DMPAPER_JENV_CHOU3_ROTATED               For 86  // Japanese Envelope Chou #3 Rotated
+Define DMPAPER_JENV_CHOU4_ROTATED               For 87  // Japanese Envelope Chou #4 Rotated
+Define DMPAPER_B6_JIS                           For 88  // B6 (JIS) 128 x 182 mm
+Define DMPAPER_B6_JIS_ROTATED                   For 89  // B6 (JIS) Rotated 182 x 128 mm
+Define DMPAPER_12X11                            For 90  // 12 x 11 in
+Define DMPAPER_JENV_YOU4                        For 91  // Japanese Envelope You #4
+Define DMPAPER_JENV_YOU4_ROTATED                For 92  // Japanese Envelope You #4 Rotated
+Define DMPAPER_P16K                             For 93  // PRC 16K 146 x 215 mm
+Define DMPAPER_P32K                             For 94  // PRC 32K 97 x 151 mm
+Define DMPAPER_P32KBIG                          For 95  // PRC 32K(Big) 97 x 151 mm
+Define DMPAPER_PENV_1                           For 96  // PRC Envelope #1 102 x 165 mm
+Define DMPAPER_PENV_2                           For 97  // PRC Envelope #2 102 x 176 mm
+Define DMPAPER_PENV_3                           For 98  // PRC Envelope #3 125 x 176 mm
+Define DMPAPER_PENV_4                           For 99  // PRC Envelope #4 110 x 208 mm
+Define DMPAPER_PENV_5                           For 100 // PRC Envelope #5 110 x 220 mm
+Define DMPAPER_PENV_6                           For 101 // PRC Envelope #6 120 x 230 mm
+Define DMPAPER_PENV_7                           For 102 // PRC Envelope #7 160 x 230 mm
+Define DMPAPER_PENV_8                           For 103 // PRC Envelope #8 120 x 309 mm
+Define DMPAPER_PENV_9                           For 104 // PRC Envelope #9 229 x 324 mm
+Define DMPAPER_PENV_10                          For 105 // PRC Envelope #10 324 x 458 mm
+Define DMPAPER_P16K_ROTATED                     For 106 // PRC 16K Rotated
+Define DMPAPER_P32K_ROTATED                     For 107 // PRC 32K Rotated
+Define DMPAPER_P32KBIG_ROTATED                  For 108 // PRC 32K(Big) Rotated
+Define DMPAPER_PENV_1_ROTATED                   For 109 // PRC Envelope #1 Rotated 165 x 102 mm
+Define DMPAPER_PENV_2_ROTATED                   For 110 // PRC Envelope #2 Rotated 176 x 102 mm
+Define DMPAPER_PENV_3_ROTATED                   For 111 // PRC Envelope #3 Rotated 176 x 125 mm
+Define DMPAPER_PENV_4_ROTATED                   For 112 // PRC Envelope #4 Rotated 208 x 110 mm
+Define DMPAPER_PENV_5_ROTATED                   For 113 // PRC Envelope #5 Rotated 220 x 110 mm
+Define DMPAPER_PENV_6_ROTATED                   For 114 // PRC Envelope #6 Rotated 230 x 120 mm
+Define DMPAPER_PENV_7_ROTATED                   For 115 // PRC Envelope #7 Rotated 230 x 160 mm
+Define DMPAPER_PENV_8_ROTATED                   For 116 // PRC Envelope #8 Rotated 309 x 120 mm
+Define DMPAPER_PENV_9_ROTATED                   For 117 // PRC Envelope #9 Rotated 324 x 229 mm
+Define DMPAPER_PENV_10_ROTATED                  For 118 // PRC Envelope #10 Rotated 458 x 324 mm
+Define DMPAPER_USER                             For 256
+
+// DEVMODE.dmDefaultSource constants
+Define DMBIN_UPPER          For 1
+Define DMBIN_ONLYONE        For 1
+Define DMBIN_LOWER          For 2
+Define DMBIN_MIDDLE         For 3
+Define DMBIN_MANUAL         For 4
+Define DMBIN_ENVELOPE       For 5
+Define DMBIN_ENVMANUAL      For 6
+Define DMBIN_AUTO           For 7
+Define DMBIN_TRACTOR        For 8
+Define DMBIN_SMALLFMT       For 9
+Define DMBIN_LARGEFMT       For 10
+Define DMBIN_LARGECAPACITY  For 11
+Define DMBIN_CASSETTE       For 14
+Define DMBIN_FORMSOURCE     For 15
+Define DMBIN_USER           For 256
+
+// DEVMODE.dmPrintQuality constants
+Define DMRES_DRAFT  For (-1)
+Define DMRES_LOW    For (-2)
+Define DMRES_MEDIUM For (-3)
+Define DMRES_HIGH   For (-4)
+
+// DEVMODE.dmColor constants
+Define DMCOLOR_MONOCHROME   For 1
+Define DMCOLOR_COLOR        For 2
+
+// DEVMODE.dmDuplex constants
+Define DMDUP_SIMPLEX    For 1
+Define DMDUP_VERTICAL   For 2
+Define DMDUP_HORIZONTAL For 3
+
+// DEVMODE.dmTTOption constants
+Define DMTT_BITMAP              For 1 // print TT fonts as graphics
+Define DMTT_DOWNLOAD            For 2 // download TT fonts as soft fonts
+Define DMTT_SUBDEV              For 3 // substitute device fonts for TT fonts
+Define DMTT_DOWNLOAD_OUTLINE    For 4 // download TT fonts as outline soft fonts
+
+// DEVMODE.dmCollate constants
+Define DMCOLLATE_FALSE  For 0
+Define DMCOLLATE_TRUE   For 1
+
+// DEVMODE.dmNup constants
+Define DMNUP_SYSTEM For 1
+Define DMNUP_ONEUP  For 2
+
+// DEVMODE.dmICMMethod constants
+Define DMICMMETHOD_NONE     For 1   // ICM disabled */
+Define DMICMMETHOD_SYSTEM   For 2   // ICM handled by system */
+Define DMICMMETHOD_DRIVER   For 3   // ICM handled by driver */
+Define DMICMMETHOD_DEVICE   For 4   // ICM handled by device */
+Define DMICMMETHOD_USER     For 256 // Device-specific methods start here */
+
+// DEVMODE.dmICMIntent constants
+Define DMICM_SATURATE           For 1   // Maximize color saturation */
+Define DMICM_CONTRAST           For 2   // Maximize color contrast */
+Define DMICM_COLORIMETRIC       For 3   // Use specific color metric */
+Define DMICM_ABS_COLORIMETRIC   For 4   // Use specific color metric */
+Define DMICM_USER               For 256 // Device-specific intents start here */
+
+// DEVMODE.dmMediaType constants
+Define DMMEDIA_STANDARD     For 1   // Standard paper */
+Define DMMEDIA_TRANSPARENCY For 2   // Transparency */
+Define DMMEDIA_GLOSSY       For 3   // Glossy paper */
+Define DMMEDIA_USER         For 256 // Device-specific media start here */
+
+// DEVMODE.DitherType constants
+Define DMDITHER_NONE            For 1   // No dithering */
+Define DMDITHER_COARSE          For 2   // Dither with a coarse brush */
+Define DMDITHER_FINE            For 3   // Dither with a fine brush */
+Define DMDITHER_LINEART         For 4   // LineArt dithering */
+Define DMDITHER_ERRORDIFFUSION  For 5   // LineArt dithering */
+Define DMDITHER_RESERVED6       For 6   // LineArt dithering */
+Define DMDITHER_RESERVED7       For 7   // LineArt dithering */
+Define DMDITHER_RESERVED8       For 8   // LineArt dithering */
+Define DMDITHER_RESERVED9       For 9   // LineArt dithering */
+Define DMDITHER_GRAYSCALE       For 10  // Device does grayscaling */
+Define DMDITHER_USER            For 256 // Device-specific dithers start here */
+
+External_Function WinAPI_EnumPrinters "EnumPrintersW" WinSpool.Drv ;
+    UInteger dwFlags ;
+    Pointer pPrinterObjectName ;
+    UInteger dwLevel ;
+    Pointer pPrinterEnum ;
+    UInteger cbBuf ;
+    Pointer pcbNeeded ;
+    Pointer pcReturned ;
+    Returns Boolean
+
+Enum_List
+    Define C_PRINTER_INFO_1 For 1
+    Define C_PRINTER_INFO_2
+    Define C_PRINTER_INFO_3
+    Define C_PRINTER_INFO_4
+    Define C_PRINTER_INFO_5
+    Define C_PRINTER_INFO_6
+    Define C_PRINTER_INFO_7
+    Define C_PRINTER_INFO_8
+    Define C_PRINTER_INFO_9
+End_Enum_List
+
+Define PRINTER_DRIVER_PACKAGE_AWARE         for |CI$00000001
+Define PRINTER_DRIVER_XPS                   for |CI$00000002
+Define PRINTER_DRIVER_SANDBOX_ENABLED       for |CI$00000004
+Define PRINTER_DRIVER_CLASS                 for |CI$00000008
+Define PRINTER_DRIVER_DERIVED               for |CI$00000010
+Define PRINTER_DRIVER_NOT_SHAREABLE         for |CI$00000020
+Define PRINTER_DRIVER_CATEGORY_FAX          for |CI$00000040
+Define PRINTER_DRIVER_CATEGORY_FILE         for |CI$00000080
+Define PRINTER_DRIVER_CATEGORY_VIRTUAL      for |CI$00000100
+Define PRINTER_DRIVER_CATEGORY_SERVICE      for |CI$00000200
+Define PRINTER_DRIVER_SOFT_RESET_REQUIRED   for |CI$00000400
+
+Define C_$PRINTER_DRIVER_PACKAGE_AWARE          for "The printer driver is part of a driver package"
+Define C_$PRINTER_DRIVER_XPS                    for "The printer driver supports the Microsoft XPS format described in the XML Paper Specification: Overview, and also in Product Behavior, section <27>"
+Define C_$PRINTER_DRIVER_SANDBOX_ENABLED        for "The printer driver is compatible with printer driver isolation. for more information, see Product Behavior, section <28>"
+Define C_$PRINTER_DRIVER_CLASS                  for "The printer driver is a class printer driver"
+Define C_$PRINTER_DRIVER_DERIVED                for "The printer driver is a derived printer driver"
+Define C_$PRINTER_DRIVER_NOT_SHAREABLE          for "Printers using this printer driver cannot be shared"
+Define C_$PRINTER_DRIVER_CATEGORY_FAX           for "The printer driver is intended for use with fax printers"
+Define C_$PRINTER_DRIVER_CATEGORY_FILE          for "The printer driver is intended for use with file printers"
+Define C_$PRINTER_DRIVER_CATEGORY_VIRTUAL       for "The printer driver is intended for use with virtual printers"
+Define C_$PRINTER_DRIVER_CATEGORY_SERVICE       for "The printer driver is intended for use with service printers"
+Define C_$PRINTER_DRIVER_SOFT_RESET_REQUIRED    for "Printers that use this printer driver should follow the guidelines outlined in the USB Device Class Definition. For more information, see Product Behavior, section <36>"

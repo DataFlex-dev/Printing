@@ -1,0 +1,34 @@
+﻿Use tWinStructs.pkg
+
+{ Name = Job_Info_2 }
+Struct tWinJob_Info_2
+    UInteger uiJobId
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment
+#ENDIF
+    Pointer pPrinterName
+    Pointer pMachineName
+    Pointer pUserName
+    Pointer pDocument
+    Pointer pNotifyName
+    Pointer pDatatype
+    Pointer pPrintProcessor
+    Pointer pParameters
+    Pointer pDriverName
+    Pointer pDevMode
+    Pointer pStatus
+    Pointer pSecurityDescriptor
+    UInteger uiStatus
+    UInteger uiPriority
+    UInteger uiPosition
+    UInteger uiStartTime
+    UInteger uiUntilTime
+    UInteger uiTotalPages
+    UInteger uiSize
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment2
+#ENDIF
+    tWinSystemTime tsSubmitted
+    UInteger uiTime
+    UInteger uiPagesPrinted
+End_Struct

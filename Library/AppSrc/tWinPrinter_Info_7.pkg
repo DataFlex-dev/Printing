@@ -1,0 +1,10 @@
+﻿// https://docs.microsoft.com/en-us/windows/win32/printdocs/printer-info-7
+
+{ Name = Printer_Info_7 }
+Struct tWinPrinter_Info_7
+    Pointer pszObjectGUID
+    UInteger dwAction
+#IFDEF IS$Win64
+    UInteger _MissingAlignment
+#ENDIF
+End_Struct

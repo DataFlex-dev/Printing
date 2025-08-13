@@ -1,0 +1,25 @@
+﻿{ Name = tForm_Info_2 }
+Struct tWinForm_Info_2
+    UInteger Flags
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment
+#ENDIF
+    Pointer pName
+    tWinSize Size
+    tWinRect ImageableArea
+    Pointer pKeyword
+    UInteger StringType
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment2
+#ENDIF
+    Pointer pMuiDll
+    UInteger dwResourceId
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment3
+#ENDIF
+    Pointer pDisplayName
+    UInteger wLangId
+#IFDEF IS$WIN64
+    UInteger _MissingAlignment4
+#ENDIF
+End_Struct

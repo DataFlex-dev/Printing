@@ -1,0 +1,26 @@
+=================================================
+Welcome to the DataFlex Printing Library 
+=================================================
+
+This release is for the DataFlex 2025 (v25.0).
+
+Release date: 2025, January
+
+Tested and approved for 25.0.
+
+Changes in v25.0
+- Migrated library to DataFlex 25.0
+
+Changes in v24.0
+- Printing.Ico added to library
+- Printing.Ico used in demo program
+- Anchors corrections in demo program
+- Toolbar and menu bars corrections
+- Height of dialogs corrections
+
+==================================================================
+Please report any bugs or suggestions to via the Data Access
+forums at http://support.dataaccess.com/forums
+====================================================================
+We hope you enjoy the use of the DataFlex Printing Library!
+====================================================================

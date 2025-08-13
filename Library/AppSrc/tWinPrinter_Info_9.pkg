@@ -1,0 +1,10 @@
+﻿// https://docs.microsoft.com/en-us/windows/win32/printdocs/printer-info-9
+
+// The per-user defaults will affect only a particular user or anyone who uses the profile.
+// In contrast, the Global defaults are Set by the administrator of a printer that can be used by anyone.
+// For Global defaults, Use PRINTER_INFO_8.
+
+{ Name = Printer_Info_9 }
+Struct tWinPrinter_Info_9
+    Pointer pDevMode
+End_Struct

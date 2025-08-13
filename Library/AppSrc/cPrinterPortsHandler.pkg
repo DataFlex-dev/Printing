@@ -1,0 +1,59 @@
+﻿Use EnumPrinterPorts.h.pkg
+
+Class cPrinterPortsHandler is a cObject
+    Procedure Construct_Object
+        Forward Send Construct_Object
+        
+        { DesignTime = False }
+        { Description = "Array of tPrinterPortInfo structs" }
+        Property tPrinterPortInfo[] pPortsInfo
+    End_Procedure
+    
+    Procedure EnumPorts String sPrinterName Integer eType
+        Integer iRetval iPortElements iPortElement
+        UInteger cbNeeded cReturned
+        tWinPort_Info_1[] Ports1Info
+        tWinPort_Info_2[] Ports2Info
+        tPrinterPortInfo[] PortsInfo
+        WString wPrinterName
+        Address aPortsInfo
+
+        Move sPrinterName to wPrinterName
+        Move 0 to cbNeeded
+        Move 0 to cReturned
+        Move (WinAPI_EnumPorts (AddressOf (wPrinterName), eType, 0, 0, AddressOf (cbNeeded), AddressOf (cReturned))) to iRetval
+        If (cbNeeded > 0) Begin
+            Move (Alloc (cbNeeded)) to aPortsInfo
+            Move (WinAPI_EnumPorts (AddressOf (wPrinterName), eType, aPortsInfo, cbNeeded, AddressOf (cbNeeded), AddressOf (cReturned))) to iRetval
+            If (iRetval <> 0 and cReturned > 0) Begin
+                If (eType = C_ENUMPORTS_TYPE_1) Begin
+                    Move (ResizeArray (Ports1Info, cReturned)) to Ports1Info
+                    Move (MemCopy (AddressOf (Ports1Info), aPortsInfo, cReturned * SizeOfType (tWinPort_Info_1))) to iRetval
+                    Move (SizeOfArray (Ports1Info)) to iPortElements
+                End
+                Else Begin
+                    Move (ResizeArray (Ports2Info, cReturned)) to Ports2Info
+                    Move (MemCopy (AddressOf (Ports2Info), aPortsInfo, cReturned * SizeOfType (tWinPort_Info_2))) to iRetval
+                    Move (SizeOfArray (Ports2Info)) to iPortElements
+                End
+                Decrement iPortElements
+                For iPortElement from 0 to iPortElements
+                    Case Begin
+                        Case (eType = C_ENUMPORTS_TYPE_1)
+                            Move (PointerToWString (Ports1Info[iPortElement].pName)) to PortsInfo[iPortElement].sPortName
+                            Case Break
+                        Case (eType = C_ENUMPORTS_TYPE_2)
+                            Move (PointerToWString (Ports2Info[iPortElement].pPortName)) to PortsInfo[iPortElement].sPortName
+                            Move Ports2Info[iPortElement].fPortType to PortsInfo[iPortElement].uiPortType
+                            Move (PointerToWString (Ports2Info[iPortElement].pDescription)) to PortsInfo[iPortElement].sDescription
+                            Move (PointerToWString (Ports2Info[iPortElement].pMonitorName)) to PortsInfo[iPortElement].sMonitorName
+                            Case Break                                
+                    Case End
+                Loop
+            End
+            Move (Free (aPortsInfo)) to iRetval
+        End
+        
+        Set pPortsInfo to PortsInfo
+    End_Procedure
+End_Class

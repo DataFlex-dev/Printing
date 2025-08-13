@@ -1,0 +1,52 @@
+﻿Define C_$PRINTER_STATUS_PAUSED               for "The printer is paused" 
+Define C_$PRINTER_STATUS_ERROR                for "The printer is in an error state" 
+Define C_$PRINTER_STATUS_PENDING_DELETION     for "The printer is deleting a print job" 
+Define C_$PRINTER_STATUS_PAPER_JAM            for "Paper is jammed in the printer" 
+Define C_$PRINTER_STATUS_PAPER_OUT            for "The printer is out of paper" 
+Define C_$PRINTER_STATUS_MANUAL_FEED          for "The printer is in a manual feed state" 
+Define C_$PRINTER_STATUS_PAPER_PROBLEM        for "The printer has a paper problem" 
+Define C_$PRINTER_STATUS_OFFLINE              for "The printer is offline" 
+Define C_$PRINTER_STATUS_IO_ACTIVE            for "The printer is in an active input/output state" 
+Define C_$PRINTER_STATUS_BUSY                 for "The printer is busy" 
+Define C_$PRINTER_STATUS_PRINTING             for "The printer is printing" 
+Define C_$PRINTER_STATUS_OUTPUT_BIN_FULL      for "The printer's output bin is full" 
+Define C_$PRINTER_STATUS_NOT_AVAILABLE        for "The printer is not available for printing" 
+Define C_$PRINTER_STATUS_WAITING              for "The printer is waiting" 
+Define C_$PRINTER_STATUS_PROCESSING           for "The printer is processing a print job" 
+Define C_$PRINTER_STATUS_INITIALIZING         for "The printer is initializing" 
+Define C_$PRINTER_STATUS_WARMING_UP           for "The printer is warming up" 
+Define C_$PRINTER_STATUS_TONER_LOW            for "The printer is low on toner" 
+Define C_$PRINTER_STATUS_NO_TONER             for "The printer is out of toner" 
+Define C_$PRINTER_STATUS_PAGE_PUNT            for "The printer cannot print the current page" 
+Define C_$PRINTER_STATUS_USER_INTERVENTION    for "The printer has an error that requires the user to do something" 
+Define C_$PRINTER_STATUS_OUT_OF_MEMORY        for "The printer has run out of memory" 
+Define C_$PRINTER_STATUS_DOOR_OPEN            for "The printer door is open" 
+Define C_$PRINTER_STATUS_SERVER_UNKNOWN       for "The printer status is unknown" 
+Define C_$PRINTER_STATUS_POWER_SAVE           for "The printer is in power save mode" 
+Define C_$PRINTER_STATUS_NO_INFORMATION       for "No information available"
+
+Define PRINTER_STATUS_PAUSED            for |CI$00000001
+Define PRINTER_STATUS_ERROR             for |CI$00000002
+Define PRINTER_STATUS_PENDING_DELETION  for |CI$00000004
+Define PRINTER_STATUS_PAPER_JAM         for |CI$00000008
+Define PRINTER_STATUS_PAPER_OUT         for |CI$00000010
+Define PRINTER_STATUS_MANUAL_FEED       for |CI$00000020
+Define PRINTER_STATUS_PAPER_PROBLEM     for |CI$00000040
+Define PRINTER_STATUS_OFFLINE           for |CI$00000080
+Define PRINTER_STATUS_IO_ACTIVE         for |CI$00000100
+Define PRINTER_STATUS_BUSY              for |CI$00000200
+Define PRINTER_STATUS_PRINTING          for |CI$00000400
+Define PRINTER_STATUS_OUTPUT_BIN_FULL   for |CI$00000800
+Define PRINTER_STATUS_NOT_AVAILABLE     for |CI$00001000
+Define PRINTER_STATUS_WAITING           for |CI$00002000
+Define PRINTER_STATUS_PROCESSING        for |CI$00004000
+Define PRINTER_STATUS_INITIALIZING      for |CI$00008000
+Define PRINTER_STATUS_WARMING_UP        for |CI$00010000
+Define PRINTER_STATUS_TONER_LOW         for |CI$00020000
+Define PRINTER_STATUS_NO_TONER          for |CI$00040000
+Define PRINTER_STATUS_PAGE_PUNT         for |CI$00080000
+Define PRINTER_STATUS_USER_INTERVENTION for |CI$00100000
+Define PRINTER_STATUS_OUT_OF_MEMORY     for |CI$00200000
+Define PRINTER_STATUS_DOOR_OPEN         for |CI$00400000
+Define PRINTER_STATUS_SERVER_UNKNOWN    for |CI$00800000
+Define PRINTER_STATUS_POWER_SAVE        for |CI$01000000

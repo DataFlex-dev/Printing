@@ -1,0 +1,31 @@
+﻿Use VdfBase.pkg
+
+// Struct is not used in Windows API calls which makes the members DF members (so string instead of pointer)
+Struct tPrinterDriverInfo
+    UInteger cVersion
+    String sName
+    String sEnvironment
+    String sDriverPath
+    String sDataFile
+    String sConfigFile
+    String sHelpFile
+    String[] sDependentFiles
+    String sMonitorName
+    String sDefaultDataType
+    String[] sPreviousNames
+    DateTime dtDriverDateTime
+    UBigInt uiDriverVersion
+    String sMfgName
+    String sOEMUrl
+    String sHardwareID
+    String sProvider
+    String sPrintProcessor
+    String sVendorSetup
+    String[] sColorProfiles
+    String sInfPath
+    UInteger uiDriverAttributes
+    String[] sCoreDriverDependencies
+    DateTime dtMinInboxDriverVerDate
+    UInteger uiMinInboxDriverVerVersion
+    UInteger uiConfigVersion
+End_Struct

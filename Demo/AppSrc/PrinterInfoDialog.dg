@@ -1,0 +1,197 @@
+﻿Use Windows.pkg
+Use cCJGridColumnRowIndicator.pkg
+Use cCJGridColumn.pkg
+
+Object oPrinterInfoDialog is a ModalPanel
+    Set Label to "PrinterInfo"
+    Set Size to 249 413
+    Set piMinSize to 104 217
+    Set Location to 2 2
+    Set Border_Style To Border_Thick
+
+    Procedure Page_Object Boolean bPage
+        Forward Send Page_Object bPage
+
+        If (bPage) Begin
+            Set Icon to "Printing.Ico"
+        End
+    End_Procedure
+
+    Object oCloseButton is a Button
+        Set Label to "&Close"
+        Set Location to 232 353
+        Set peAnchors To anBottomRight
+        Set Default_State To True
+
+        Procedure OnClick
+            Send Close_Panel
+        End_Procedure
+    End_Object
+
+    Object oPrinterInfoGrid is a cCJGrid
+        Set Location to 5 5
+        Set Size to 225 398
+        Set peAnchors to anAll
+        Set pbAllowEdit to False
+        Set pbAllowDeleteRow to False
+        Set pbAllowAppendRow to False
+        Set pbAutoAppend to False
+        Set pbAllowInsertRow to False
+        Set pbAutoSave to False
+        Set pbEditOnTyping to False
+        Set piAlternateRowBackgroundColor to clBtnFace
+        Set pbUseAlternateRowBackgroundColor to True
+
+        { DesignTime = False }
+        Property Handle phoInfo
+        { DesignTime = False }
+        Property Integer piIndex
+
+        Object oCJGridColumnRowIndicator is a cCJGridColumnRowIndicator
+            Set piWidth to 25
+        End_Object
+
+        Object oAttributeNameColumn is a cCJGridColumn
+            Set piWidth to 114
+            Set psCaption to "Attribute"
+        End_Object
+
+        Object oAttributeValueColumn is a cCJGridColumn
+            Set piWidth to 274
+            Set psCaption to "Value"
+        End_Object
+
+        Procedure Activating
+            Forward Send Activating
+
+            Send ShowData
+        End_Procedure
+
+        Procedure ShowData
+            Handle hoInfo
+            tPrinterInfo[] PrintersInfo
+            tDataSourceRow[] PrinterInfoGridData
+            Integer iIndex iAttributeNameColumnID iAttributeValueColumnID iRow
+            Integer iElements iElement
+            String[] sTexts
+
+            Get phoInfo to hoInfo
+            Get piIndex to iIndex
+
+            Get pPrintersInfo Of hoInfo To PrintersInfo
+
+            Get piColumnId of oAttributeNameColumn to iAttributeNameColumnID
+            Get piColumnId of oAttributeValueColumn to iAttributeValueColumnID
+
+            Move 0 to iRow
+
+            Move "ServerName" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].sServerName to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "PrinterName" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].sPrinterName to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "ShareName" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].sShareName to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "PortName" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].sPortName to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "DriverName" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].sDriverName to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "Comment" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].sComment to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "Location" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].sLocation to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "SepFile" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].sSepFile to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "PrintProcessor" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].sPrintProcessor to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "DataType" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].sDatatype to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "Parameters" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].sParameters to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "Attributes" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Get PrinterAttributesText of hoInfo iIndex to sTexts
+            Move (SizeOfArray (sTexts)) to iElements
+            If (iElements > 0) Begin
+                Decrement iElements
+                For iElement from 0 to iElements
+                    Move sTexts[iElement] to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+                    Increment iRow
+                Loop
+            End
+            Else Begin
+                Increment iRow
+            End
+
+            Move "Priority" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].uiPriority to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "DefaultPriority" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].uiDefaultPriority to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "StartTime" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].tmStartTime to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "UntilTime" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].tmUntilTime to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "Status" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Get PrinterStatusText of hoInfo iIndex to sTexts
+            Move (SizeOfArray (sTexts)) to iElements
+            If (iElements > 0) Begin
+                Decrement iElements
+                For iElement from 0 to iElements
+                    Move sTexts[iElement] to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+                    Increment iRow
+                Loop
+            End
+            Else Begin
+                Increment iRow
+            End
+
+            Move "cJobs" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].uicJobs to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Move "AveragePPM" to PrinterInfoGridData[iRow].sValue[iAttributeNameColumnID]
+            Move PrintersInfo[iIndex].uiAveragePPM to PrinterInfoGridData[iRow].sValue[iAttributeValueColumnID]
+            Increment iRow
+
+            Send InitializeData PrinterInfoGridData
+        End_Procedure
+    End_Object
+
+    Procedure ShowInfo Handle hoInfo Integer iIndex
+        Set phoInfo of oPrinterInfoGrid to hoInfo
+        Set piIndex of oPrinterInfoGrid to iIndex
+
+        Send Popup_Modal
+    End_Procedure
+
+    On_Key Key_Alt+Key_C Send KeyAction of oCloseButton
+    On_Key Key_Escape Send KeyAction Of oCloseButton
+End_Object

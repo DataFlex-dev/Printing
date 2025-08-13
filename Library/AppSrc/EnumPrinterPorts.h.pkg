@@ -1,0 +1,15 @@
+﻿Use tWinPort_Info_1.pkg
+Use tWinPort_Info_2.pkg
+Use tPrinterPortInfo.pkg
+
+External_Function WinAPI_EnumPorts "EnumPortsW" Winspool.drv ;
+    Pointer pName ;
+    UInteger Level ;
+    Pointer pPorts ;
+    UInteger cbBuf ;
+    Pointer pcbNeeded ;
+    Pointer pcReturned ;
+    Returns Integer
+  
+Define C_ENUMPORTS_TYPE_1 for 1 // tells EnumPorts to return tWinPort_Info_1 info
+Define C_ENUMPORTS_TYPE_2 for 2 // tells EnumPorts to return tWinPort_Info_2 info

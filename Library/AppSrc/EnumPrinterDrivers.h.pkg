@@ -1,0 +1,28 @@
+﻿Use VdfBase.pkg
+Use tWinDriver_Info_1.pkg
+Use tWinDriver_Info_2.pkg
+Use tWinDriver_Info_3.pkg
+Use tWinDriver_Info_4.pkg
+Use tWinDriver_Info_5.pkg
+Use tWinDriver_Info_6.pkg
+Use tWinDriver_Info_8.pkg
+
+External_Function WinAPI_EnumPrinterDrivers "EnumPrinterDriversW" WinSpool.Drv ;
+    Pointer pName ;
+    Pointer pEnvironment ;
+    UInteger Level ;
+    Pointer pDriverInfo ;
+    UInteger cbBuf ;
+    Pointer pcbNeeded ;
+    Pointer pcReturned ;
+    Returns Boolean
+
+Enum_List
+    Define C_DRIVER_INFO_1 for 1
+    Define C_DRIVER_INFO_2
+    Define C_DRIVER_INFO_3
+    Define C_DRIVER_INFO_4
+    Define C_DRIVER_INFO_5
+    Define C_DRIVER_INFO_6
+    Define C_DRIVER_INFO_8 for 8
+End_Enum_List

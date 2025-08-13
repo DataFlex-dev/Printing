@@ -1,0 +1,329 @@
+﻿Use PrinterStatus.h.pkg
+Use GetPrinter.h.pkg
+Use OpenPrinter.h.pkg
+Use ClosePrinter.h.pkg
+Use tPrinterInfo.pkg
+Use tWinPrinter_Info_2.pkg
+Use GlobalFunctionsProcedures.pkg
+
+Class cPrintersHandler is a cObject
+    Procedure Construct_Object
+        Forward Send Construct_Object
+
+        { DesignTime = False }
+        { Description = "Array of printerinfo structs" }
+        Property tPrinterInfo[] pPrintersInfo
+    End_Procedure
+
+    Function PrinterStatusText Integer iPrinter Returns String[]
+        tPrinterInfo[] PrintersInfo
+        String[] sTexts
+
+        Get pPrintersInfo to PrintersInfo
+
+        If (IsFlagIn (PRINTER_STATUS_PAUSED, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_PAUSED to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_ERROR, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_ERROR to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_PENDING_DELETION, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_PENDING_DELETION to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_PAPER_JAM, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_PAPER_JAM to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_PAPER_OUT, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_PAPER_OUT to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_MANUAL_FEED, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_MANUAL_FEED to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_PAPER_PROBLEM, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_PAPER_PROBLEM to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_OFFLINE, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_OFFLINE to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_IO_ACTIVE, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_IO_ACTIVE to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_BUSY, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_BUSY to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_PRINTING, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_PRINTING to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_OUTPUT_BIN_FULL, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_OUTPUT_BIN_FULL to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_NOT_AVAILABLE, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_NOT_AVAILABLE to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_WAITING, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_WAITING to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_PROCESSING, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_PROCESSING to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_INITIALIZING, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_INITIALIZING to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_WARMING_UP, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_WARMING_UP to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_TONER_LOW, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_TONER_LOW to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_NO_TONER, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_NO_TONER to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_PAGE_PUNT, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_PAGE_PUNT to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_USER_INTERVENTION, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_USER_INTERVENTION to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_OUT_OF_MEMORY, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_OUT_OF_MEMORY to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_DOOR_OPEN, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_DOOR_OPEN to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_SERVER_UNKNOWN, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_SERVER_UNKNOWN to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_STATUS_POWER_SAVE, PrintersInfo[iPrinter].uiStatus)) Begin
+            Move C_$PRINTER_STATUS_POWER_SAVE to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (SizeOfArray (sTexts) = 0) Begin
+            Move C_$PRINTER_STATUS_NO_INFORMATION to sTexts[0]
+        End
+
+        Function_Return sTexts
+    End_Function
+
+    Function PrinterAttributesText Integer iPrinter Returns String[]
+        tPrinterInfo[] PrintersInfo
+        String[] sTexts
+
+        Get pPrintersInfo to PrintersInfo
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_DEFAULT, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_DEFAULT to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_DIRECT, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_DIRECT to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_DO_COMPLETE_FIRST, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_DO_COMPLETE_FIRST to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_ENABLE_BIDI, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_ENABLE_BIDI to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_ENABLE_DEVQ, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_ENABLE_DEVQ to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_FAX, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_FAX to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_FRIENDLY_NAME, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_FRIENDLY_NAME to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_HIDDEN, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_HIDDEN to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_KEEPPRINTEDJOBS, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_KEEPPRINTEDJOBS to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_LOCAL, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_LOCAL to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_MACHINE, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_MACHINE to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_NETWORK, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_NETWORK to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_PUBLISHED, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_PUBLISHED to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_PUSHED_USER, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_PUSHED_USER to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_PUSHED_MACHINE, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_PUSHED_MACHINE to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_QUEUED, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_QUEUED to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_RAW_ONLY, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_RAW_ONLY to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_SHARED, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_SHARED to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (PRINTER_ATTRIBUTE_WORK_OFFLINE, PrintersInfo[iPrinter].uiAttributes)) Begin
+            Move C_$PRINTER_ATTRIBUTE_WORK_OFFLINE to sTexts[SizeOfArray (sTexts)]
+        End
+
+        Function_Return sTexts
+    End_Function
+
+    Function TestPrinter String sPrinterName Returns String
+        tWinPrinter_Info_2 PrinterInfo
+        Handle hPrinter
+        Integer iResult cbNeeded iElements iElement
+        Address aData
+        String[] sPrinterStatusTexts
+        String sResult
+        WString wPrinterName
+
+        Move 0 to hPrinter
+        Move sPrinterName to wPrinterName
+        Move (WinAPI_OpenPrinter (AddressOf (wPrinterName), AddressOf (hPrinter), 0)) to iResult
+        If (iResult <> 0) Begin
+            Move 0 to cbNeeded
+            Move (WinAPI_GetPrinter (hPrinter, C_PRINTER_INFO_2, 0, 0, AddressOf (cbNeeded))) to iResult
+            If (iResult = 0) Begin
+                Move (Alloc (cbNeeded)) to aData
+                Move (WinAPI_GetPrinter (hPrinter, C_PRINTER_INFO_2, aData, cbNeeded, AddressOf (cbNeeded))) to iResult
+                If (iResult <> 0) Begin
+                    Move (MemCopy (AddressOf (PrinterInfo), aData, SizeOfType (tWinPrinter_Info_2))) to iResult
+                    If (PrinterInfo.Status <> 0) Begin
+                        Get PrinterStatusText PrinterInfo.Status to sPrinterStatusTexts
+                        Move (SizeOfArray (sPrinterStatusTexts) - 1) to iElements
+                        Move (SFormat ("%1 status: %2", sPrinterName, PrinterInfo.Status)) to sResult
+                        For iElement from 0 to iElements
+                            Move (sResult * sPrinterStatusTexts[iElement]) to sResult
+                        Loop
+                    End
+                    Else Begin
+                        Move (SFormat ("%1 is operating normally", sPrinterName)) to sResult
+                    End
+                End
+                Move (Free (aData)) to iResult
+            End
+            Move (WinAPI_ClosePrinter (hPrinter)) to iResult
+        End
+        Else Begin
+            Move ("Cannot open printer:" * sPrinterName) to sResult
+        End
+
+        Function_Return sResult
+    End_Function
+
+    // Enumerate the windows printers.
+    // The data returned by the EnumPrinters function call does not only contain
+    // an array with the information but data as well in the same buffer. The
+    // value of returned printers really contains the printer information.
+    Procedure EnumPrintersOnLocalMachine Boolean bEnumConnections
+        Integer iArraySizeNeeded icPrintersReturned
+        Integer iFlags iRetval iPrinter
+        tWinPrinter_Info_2[] PrintersInfo2
+        tPrinterInfo[] PrintersInfo
+        Boolean bOk
+        Address aData
+
+        Move 0 to iArraySizeNeeded
+        Move 0 to icPrintersReturned
+
+        Move PRINTER_ENUM_LOCAL to iFlags
+
+        If (bEnumConnections) Begin
+            Move (iFlags ior PRINTER_ENUM_CONNECTIONS) to iFlags
+        End
+
+        Move (WinAPI_EnumPrinters (iFlags, 0, C_PRINTER_INFO_2, 0, 0, AddressOf (iArraySizeNeeded), AddressOf (icPrintersReturned))) to iRetval
+        If (iRetval = 0 and iArraySizeNeeded > 0) Begin
+            Move (Alloc (iArraySizeNeeded)) to aData
+            Move (WinAPI_EnumPrinters (iFlags, 0, C_PRINTER_INFO_2, aData, iArraySizeNeeded, AddressOf (iArraySizeNeeded), AddressOf (icPrintersReturned))) to iRetval
+        End
+
+        If (iRetval <> 0) Begin
+            Move (ResizeArray (PrintersInfo2, icPrintersReturned)) to PrintersInfo2
+            Move (ResizeArray (PrintersInfo, icPrintersReturned)) to PrintersInfo
+            Move (MemCopy (AddressOf (PrintersInfo2), aData, icPrintersReturned * SizeOfType (tWinPrinter_Info_2))) to iRetval
+            Decrement icPrintersReturned
+            For iPrinter from 0 to icPrintersReturned
+                Move (PointerToWString (PrintersInfo2[iPrinter].pServerName)) to PrintersInfo[iPrinter].sServerName
+                Move (PointerToWString (PrintersInfo2[iPrinter].pPrinterName)) to PrintersInfo[iPrinter].sPrinterName
+                Move (PointerToWString (PrintersInfo2[iPrinter].pShareName)) to PrintersInfo[iPrinter].sShareName
+                Move (PointerToWString (PrintersInfo2[iPrinter].pPortName)) to PrintersInfo[iPrinter].sPortName
+                Move (PointerToWString (PrintersInfo2[iPrinter].pDriverName)) to PrintersInfo[iPrinter].sDriverName
+                Move (PointerToWString (PrintersInfo2[iPrinter].pComment)) to PrintersInfo[iPrinter].sComment
+                Move (PointerToWString (PrintersInfo2[iPrinter].pLocation)) to PrintersInfo[iPrinter].sLocation
+
+                Move (MemCopy (AddressOf (PrintersInfo[iPrinter].DevMode), PrintersInfo2[iPrinter].pDevMode, SizeOfType (tPrinterInfo_DevMode))) to bOk
+
+                Move (PointerToWString (PrintersInfo2[iPrinter].pSepFile)) to PrintersInfo[iPrinter].sSepFile
+                Move (PointerToWString (PrintersInfo2[iPrinter].pPrintProcessor)) to PrintersInfo[iPrinter].sPrintProcessor
+                Move (PointerToWString (PrintersInfo2[iPrinter].pDatatype)) to PrintersInfo[iPrinter].sDatatype
+                Move (PointerToWString (PrintersInfo2[iPrinter].pParameters)) to PrintersInfo[iPrinter].sParameters
+
+                Move PrintersInfo2[iPrinter].Attributes to PrintersInfo[iPrinter].uiAttributes
+                Move PrintersInfo2[iPrinter].Priority to PrintersInfo[iPrinter].uiPriority
+                Move PrintersInfo2[iPrinter].DefaultPriority to PrintersInfo[iPrinter].uiDefaultPriority
+
+                Move (DateSetHour (PrintersInfo[iPrinter].tmStartTime, PrintersInfo2[iPrinter].StartTime / 60)) to PrintersInfo[iPrinter].tmStartTime
+                Move (DateSetMinute (PrintersInfo[iPrinter].tmStartTime, Mod (PrintersInfo2[iPrinter].Starttime, 60))) to PrintersInfo[iPrinter].tmStartTime
+
+                Move (DateSetHour (PrintersInfo[iPrinter].tmUntilTime, PrintersInfo2[iPrinter].UntilTime / 60)) to PrintersInfo[iPrinter].tmUntilTime
+                Move (DateSetMinute (PrintersInfo[iPrinter].tmUntilTime, Mod (PrintersInfo2[iPrinter].Untiltime, 60))) to PrintersInfo[iPrinter].tmUntilTime
+
+                Move PrintersInfo2[iPrinter].Status to PrintersInfo[iPrinter].uiStatus
+                Move PrintersInfo2[iPrinter].cJobs to PrintersInfo[iPrinter].uicJobs
+                Move PrintersInfo2[iPrinter].AveragePPM to PrintersInfo[iPrinter].uiAveragePPM
+            Loop
+
+            Set pPrintersInfo to PrintersInfo
+            Move (Free (aData)) to iRetval
+        End
+        Else Begin
+            Get ShowLastError to iRetval
+        End
+    End_Procedure
+End_Class

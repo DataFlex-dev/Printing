@@ -1,0 +1,20 @@
+﻿Define PRINTER_DRIVER_PACKAGE_AWARE        for |CI$00000001 // The printer driver is part of a driver package.
+Define PRINTER_DRIVER_XPS                  for |CI$00000002 // The printer driver supports the Microsoft XPS format described in the XML Paper Specification: Overview, and also in Product Behavior, section <27>
+Define PRINTER_DRIVER_SANDBOX_ENABLED      for |CI$00000004 // The printer driver is compatible with printer driver isolation. for more information, see Product Behavior, section <28>
+Define PRINTER_DRIVER_CLASS                for |CI$00000008 // The printer driver is a Class printer driver
+Define PRINTER_DRIVER_DERIVED              for |CI$00000010 // The printer driver is a derived printer driver
+Define PRINTER_DRIVER_NOT_SHAREABLE        for |CI$00000020 // Printers using this printer driver cannot be shared
+Define PRINTER_DRIVER_CATEGORY_FAX         for |CI$00000040 // The printer driver is intended for Use with fax printers
+Define PRINTER_DRIVER_CATEGORY_FILE        for |CI$00000080 // The printer driver is intended for Use with file printers
+Define PRINTER_DRIVER_CATEGORY_VIRTUAL     for |CI$00000100 // The printer driver is intended for Use with virtual printers
+Define PRINTER_DRIVER_CATEGORY_SERVICE     for |CI$00000200 // The printer driver is intended for Use with service printers
+Define PRINTER_DRIVER_SOFT_RESET_REQUIRED  for |CI$00000400 // Printers that Use this printer driver should follow the guidelines outlined in the USB Device Class Definition. For more information, see Product Behavior, section <36>
+Define PRINTER_DRIVER_SANDBOX_DISABLED     for |CI$00000800 // 
+Define PRINTER_DRIVER_CATEGORY_3D          for |CI$00001000 // 
+Define PRINTER_DRIVER_CATEGORY_CLOUD       for |CI$00002000 // 
+
+Define DSPRINT_PUBLISH         for |CI$00000001
+Define DSPRINT_UPDATE          for |CI$00000002
+Define DSPRINT_UNPUBLISH       for |CI$00000004
+Define DSPRINT_REPUBLISH       for |CI$00000008
+Define DSPRINT_PENDING         for |CI$80000000

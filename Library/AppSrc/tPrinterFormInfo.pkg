@@ -1,0 +1,14 @@
+﻿// Struct is not used in Windows API calls which makes the members DF members (so string instead of pointer)
+{ Name = tPrinterFormInfo }
+Struct tPrinterFormInfo
+    UInteger uiFlags
+    String sName
+    tWinSize Size
+    tWinRect ImageableArea
+    String sKeyword
+    UInteger uiStringType
+    String sMuiDll
+    UInteger uiResourceId
+    String sDisplayName
+    UInteger uiLangId
+End_Struct

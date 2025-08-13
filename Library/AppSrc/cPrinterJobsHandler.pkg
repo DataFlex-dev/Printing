@@ -1,0 +1,199 @@
+﻿Use EnumPrinterJobs.h.pkg
+Use tPrinterDefaults.pkg
+
+Use Classes\cDateTimeHandler.pkg
+
+Class cPrinterJobsHandler is a cObject
+    Procedure Construct_Object
+        Forward Send Construct_Object
+
+        { DesignTime = False }
+        { Description = "Array of tPrinterJobInfo structs" }
+        Property tPrinterJobInfo[] pJobsInfo
+
+        Object oDateTimeHandler is a cDateTimeHandler
+        End_Object
+    End_Procedure
+
+    Function JobStatusText UInteger uiStatus Returns String[]
+        String[] sTexts
+
+        If (IsFlagIn (JOB_STATUS_PAUSED, uiStatus)) Begin
+            Move C_$JOB_STATUS_PAUSED to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (JOB_STATUS_ERROR, uiStatus)) Begin
+            Move C_$JOB_STATUS_ERROR to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (JOB_STATUS_DELETING, uiStatus)) Begin
+            Move C_$JOB_STATUS_DELETING to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (JOB_STATUS_SPOOLING, uiStatus)) Begin
+            Move C_$JOB_STATUS_SPOOLING to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (JOB_STATUS_PRINTING, uiStatus)) Begin
+            Move C_$JOB_STATUS_PRINTING to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (JOB_STATUS_OFFLINE, uiStatus)) Begin
+            Move C_$JOB_STATUS_OFFLINE to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (JOB_STATUS_PAPEROUT, uiStatus)) Begin
+            Move C_$JOB_STATUS_PAPEROUT to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (JOB_STATUS_PRINTED, uiStatus)) Begin
+            Move C_$JOB_STATUS_PRINTED to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (JOB_STATUS_DELETED, uiStatus)) Begin
+            Move C_$JOB_STATUS_DELETED to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (JOB_STATUS_BLOCKED_DEVQ, uiStatus)) Begin
+            Move C_$JOB_STATUS_BLOCKED_DEVQ to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (JOB_STATUS_USER_INTERVENTION, uiStatus)) Begin
+            Move C_$JOB_STATUS_USER_INTERVENTION to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (JOB_STATUS_RESTART, uiStatus)) Begin
+            Move C_$JOB_STATUS_RESTART to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (JOB_STATUS_COMPLETE, uiStatus)) Begin
+            Move C_$JOB_STATUS_COMPLETE to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (JOB_STATUS_RETAINED, uiStatus)) Begin
+            Move C_$JOB_STATUS_RETAINED to sTexts[SizeOfArray (sTexts)]
+        End
+
+        If (IsFlagIn (JOB_STATUS_RENDERING_LOCALLY, uiStatus)) Begin
+            Move C_$JOB_STATUS_RENDERING_LOCALLY to sTexts[SizeOfArray (sTexts)]
+        End
+
+        Function_Return sTexts
+    End_Function
+
+    Procedure EnumJobs String sPrinterName Integer eType
+        Integer iRetval iJobs iJob
+        tWinJob_Info_1[] JobsInfo1
+        tWinJob_Info_2[] JobsInfo2
+        tPrinterJobInfo[] JobsInfo
+        tWinPrinter_Info_2 PrinterInfo
+        Handle hPrinter
+        tPrinterDefaults PrinterDefaults
+        Address aPrinterInfo aJobInfo
+        UInteger uiByteNeeded uiReturned uiByteUsed uiJobs
+        WString wPrinterName
+
+        If (eType <> C_ENUMJOBS_TYPE_1 and eType <> C_ENUMJOBS_TYPE_2) Begin
+            Error DFERR_OPERATOR "Invalid type parameter, must be 1 or 2 (indicates what struct is returned)"
+            Function_Return JobsInfo
+        End
+
+        Move 0 to hPrinter
+        Move sPrinterName to wPrinterName
+        Move (WinAPI_OpenPrinter (AddressOf (wPrinterName), AddressOf (hPrinter), AddressOf (PrinterDefaults))) to iRetval
+        If (iRetval <> 0) Begin
+            Move 0 to uiByteNeeded
+            Move (WinAPI_GetPrinter (hPrinter, C_PRINTER_INFO_2, 0, 0, AddressOf (uiByteNeeded))) to iRetval
+            If (iRetval = 0) Begin
+                Move (Alloc (uiByteNeeded)) to aPrinterInfo
+                Move (MemSet (aPrinterInfo, 0, uiByteNeeded)) to iRetval
+                Move 0 to uiByteUsed
+                Move (WinAPI_GetPrinter (hPrinter, C_PRINTER_INFO_2, aPrinterInfo, uiByteNeeded, AddressOf (uiByteUsed))) to iRetval
+                If (iRetval <> 0) Begin
+                    Move (MemCopy (AddressOf (PrinterInfo), aPrinterInfo, SizeOfType (tWinPrinter_Info_2))) to iRetval
+                    Move 0 to uiReturned
+                    Move PrinterInfo.cJobs to uiJobs
+                    // Determine size of jobinfo buffer
+                    Move (Winapi_EnumJobs (hPrinter, 0, uiJobs, eType, 0, 0, AddressOf (uiByteNeeded), AddressOf (uiReturned))) to iRetval
+                    If (iRetval <> 0 and uiReturned > 0 or (iRetval = 0 and (GetLastError() = ERROR_INSUFFICIENT_BUFFER))) Begin
+                        Move (Alloc (uiByteNeeded)) to aJobInfo
+                        Move (MemSet (aJobInfo, 0, uiByteNeeded)) to iRetval
+                        Move (Winapi_EnumJobs (hPrinter, 0, uiJobs, eType, aJobInfo, uiByteNeeded, AddressOf (uiByteUsed), AddressOf (uiReturned))) to iRetval
+                        If (iRetval <> 0) Begin
+                            Case Begin
+                                Case (eType = C_ENUMJOBS_TYPE_1)
+                                    Move (ResizeArray (JobsInfo1, uiReturned)) to JobsInfo1
+                                    Move (MemCopy (AddressOf (JobsInfo1), aJobInfo, uiReturned * SizeOfType (tWinJob_Info_1))) to iRetval
+                                    Case Break
+                                Case (eType = C_ENUMJOBS_TYPE_2)
+                                    Move (ResizeArray (JobsInfo2, uiReturned)) to JobsInfo2
+                                    Move (MemCopy (AddressOf (JobsInfo2), aJobInfo, uiReturned * SizeOfType (tWinJob_Info_2))) to iRetval
+                                    Case Break
+                            Case End
+                            Move (uiReturned - 1) to iJobs
+                            For iJob from 0 to iJobs
+                                // Copy from Windows struct to the struct that can handle all type of jobinfo data
+                                Case Begin
+                                    Case (eType = C_ENUMJOBS_TYPE_1)
+                                        Move JobsInfo1[iJob].uiJobId to JobsInfo[iJob].uiJobId
+                                        Move (PointerToWString (JobsInfo1[iJob].pPrinterName)) to JobsInfo[iJob].sPrinterName
+                                        Move (PointerToWString (JobsInfo1[iJob].pMachineName)) to JobsInfo[iJob].sMachineName
+                                        Move (PointerToWString (JobsInfo1[iJob].pUserName)) to JobsInfo[iJob].sUserName
+                                        Move (PointerToWString (JobsInfo1[iJob].pDocument)) to JobsInfo[iJob].sDocument
+                                        Move (PointerToWString (JobsInfo1[iJob].pDatatype)) to JobsInfo[iJob].sDatatype
+                                        Move '' to JobsInfo[iJob].sStatus[0]
+                                        If (JobsInfo1[iJob].pStatus <> 0) Begin
+                                            Move (PointerToWString (JobsInfo1[iJob].pStatus)) to JobsInfo[iJob].sStatus[0]
+                                        End
+                                        Move JobsInfo1[iJob].uiStatus to JobsInfo[iJob].uiStatus
+                                        Move JobsInfo1[iJob].uiPriority to JobsInfo[iJob].uiPriority
+                                        Move JobsInfo1[iJob].uiPosition to JobsInfo[iJob].uiPosition
+                                        Move JobsInfo1[iJob].uiTotalPages to JobsInfo[iJob].uiTotalPages
+                                        Move JobsInfo1[iJob].uiPagesPrinted to JobsInfo[iJob].uiPagesPrinted
+                                        Get SystemTimeToDateTime of oDateTimeHandler JobsInfo1[iJob].tsSubmitted to JobsInfo[iJob].dtSubmitted
+                                        Case Break
+                                    Case (eType = C_ENUMJOBS_TYPE_2)
+                                        Move JobsInfo2[iJob].uiJobId to JobsInfo[iJob].uiJobId
+                                        Move (PointerToWString (JobsInfo2[iJob].pPrinterName)) to JobsInfo[iJob].sPrinterName
+                                        Move (PointerToWString (JobsInfo2[iJob].pMachineName)) to JobsInfo[iJob].sMachineName
+                                        Move (PointerToWString (JobsInfo2[iJob].pUserName)) to JobsInfo[iJob].sUserName
+                                        Move (PointerToWString (JobsInfo2[iJob].pDocument)) to JobsInfo[iJob].sDocument
+                                        Move (PointerToWString (JobsInfo2[iJob].pNotifyName)) to JobsInfo[iJob].sNotifyName
+                                        Move (PointerToWString (JobsInfo2[iJob].pDatatype)) to JobsInfo[iJob].sDatatype
+                                        Move (PointerToWString (JobsInfo2[iJob].pPrintProcessor)) to JobsInfo[iJob].sPrintProcessor
+                                        Move (PointerToWString (JobsInfo2[iJob].pParameters)) to JobsInfo[iJob].sParameters
+                                        Move (PointerToWString (JobsInfo2[iJob].pDriverName)) to JobsInfo[iJob].sDriverName
+                                        Move (MemCopy (AddressOf (JobsInfo[iJob].DevMode), JobsInfo2[iJob].pDevMode, SizeOfType (tPrinterInfo_DevMode))) to iRetval
+                                        Move '' to JobsInfo[iJob].sStatus[0]
+                                        If (JobsInfo2[iJob].pStatus <> 0) Begin
+                                            Move (PointerToWString (JobsInfo2[iJob].pStatus)) to JobsInfo[iJob].sStatus[0]
+                                        End
+                                        Move JobsInfo2[iJob].pSecurityDescriptor to JobsInfo[iJob].pSecurityDescriptor
+                                        Move JobsInfo2[iJob].uiStatus to JobsInfo[iJob].uiStatus
+                                        Move JobsInfo2[iJob].uiPriority to JobsInfo[iJob].uiPriority
+                                        Move JobsInfo2[iJob].uiPosition to JobsInfo[iJob].uiPosition
+                                        Move JobsInfo2[iJob].uiStartTime to JobsInfo[iJob].uiStartTime
+                                        Move JobsInfo2[iJob].uiUntilTime to JobsInfo[iJob].uiUntilTime
+                                        Move JobsInfo2[iJob].uiTotalPages to JobsInfo[iJob].uiTotalPages
+                                        Move JobsInfo2[iJob].uiSize to JobsInfo[iJob].uiSize
+                                        Move JobsInfo2[iJob].uiPagesPrinted to JobsInfo[iJob].uiPagesPrinted
+                                        Get SystemTimeToDateTime of oDateTimeHandler JobsInfo2[iJob].tsSubmitted to JobsInfo[iJob].dtSubmitted
+                                        Move JobsInfo2[iJob].uiTime to JobsInfo[iJob].uiTime
+                                        Case Break
+                                Case End
+                                If (JobsInfo[iJob].sStatus[0] = '' and JobsInfo[iJob].uiStatus <> 0) Begin
+                                    Get JobStatusText JobsInfo[iJob].uiStatus to JobsInfo[iJob].sStatus
+                                End
+                            Loop
+                        End
+                        Move (Free (aJobInfo)) to iRetval
+                    End
+                End
+                Move (Free (aPrinterInfo)) to iRetval
+            End
+            Move (WinAPI_ClosePrinter (hPrinter)) to iRetval
+        End
+
+        Set pJobsInfo to JobsInfo
+    End_Procedure
+End_Class

@@ -1,0 +1,4 @@
+﻿{ Name = Port_Info_1 }
+Struct tWinPort_Info_1
+    Pointer pName // Pointer to a null-terminated string that identifies a supported printer port (for example, "LPT1:").
+End_Struct

@@ -1,0 +1,39 @@
+﻿Use VdfBase.pkg
+Use EnumPrinters.h.pkg
+
+Struct tPrinterInfo_DevMode
+    Short[CCHDEVICENAME] dmDeviceName
+    Short dmSpecVersion
+    Short dmDriverVersion
+    Short dmSize
+    Short dmDriverExtra
+    Integer dmFields
+    Short dmOrientation
+    Short dmPaperSize
+    Short dmPaperLength
+    Short dmPaperWidth
+    Short dmScale
+    Short dmCopies
+    Short dmDefaultSource
+    Short dmPrintQuality
+    Short dmColor
+    Short dmDuplex
+    Short dmYResolution
+    Short dmTTOption
+    Short dmCollate
+    Short[CCHFORMNAME] dmFormName
+    Short dmLogPixels // Not in use for printers
+    UInteger dmBitsPerPel // Not in use for printers
+    UInteger dmPelsWidth // Not in use for printers
+    UInteger dmPelsHeight // Not in use for printers
+    UInteger dmNup
+    UInteger dmDisplayFrequency // Not in use for printers
+    UInteger dmICMMethod
+    UInteger dmICMIntent
+    UInteger dmMediaType
+    UInteger dmDitherType
+    UInteger dmReserved1 // Not used; must be zero
+    UInteger dmReserved2 // Not used; must be zero
+    UInteger dmPanningWidth // This member must be zero
+    UInteger dmPanningHeight // This member must be zero
+End_Struct

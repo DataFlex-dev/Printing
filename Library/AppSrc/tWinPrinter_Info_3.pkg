@@ -1,0 +1,6 @@
+﻿// https://docs.microsoft.com/en-us/windows/win32/printdocs/printer-info-3
+
+{ Name = Printer_Info_3 }
+Struct tWinPrinter_Info_3
+    Pointer pSecurityDescriptor
+End_Struct

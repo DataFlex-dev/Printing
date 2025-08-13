@@ -1,0 +1,37 @@
+﻿Use VdfBase.pkg
+
+External_Function WinAPI_GetDefaultPrinter "GetDefaultPrinterW" Winspool.Drv ;
+    Pointer pszBuffer ;
+    UInteger pcchBuffer ;
+    Returns Boolean
+    
+External_Function WinAPI_SetDefaultPrinter "SetDefaultPrinterW" Winspool.Drv ;
+    Pointer pszBuffer ;
+    Returns Boolean
+
+Class cDefaultPrinter Is A cObject
+    Function DefaultPrinter Returns String
+        WString wPrinterName
+        Integer iBufferSize 
+        Boolean bSuccess
+        
+        Move 0 To iBufferSize
+        Move (WinAPI_GetDefaultPrinter (0, AddressOf (iBufferSize))) To bSuccess
+        If (Not (bSuccess)) Begin
+            Move (ZeroString (iBufferSize)) to wPrinterName
+            Move (WinAPI_GetDefaultPrinter (AddressOf (wPrinterName), AddressOf (iBufferSize))) to bSuccess
+        End
+        
+        Move (CString (wPrinterName)) to wPrinterName
+        
+        Function_Return wPrinterName
+    End_Function
+
+    Function ChangeDefaultPrinter WString wPrinterName Returns Boolean
+        Boolean bSuccess
+        
+        Move (WinAPI_SetDefaultPrinter (AddressOf (wPrinterName))) to bSuccess
+        
+        Function_Return bSuccess
+    End_Function
+End_Class

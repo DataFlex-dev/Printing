@@ -1,0 +1,5 @@
+﻿External_Function WinAPI_OpenPrinter "OpenPrinterW" Winspool.drv ;
+    Pointer pName ;
+    Pointer pPrinter ;
+    Pointer pDefault ;
+    Returns Integer

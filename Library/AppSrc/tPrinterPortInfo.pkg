@@ -1,0 +1,8 @@
+﻿// Struct is not used in Windows API calls which makes the members DF members (so string instead of pointer)
+{ Name = tPrinterPortInfo }
+Struct tPrinterPortInfo
+    String sPortName
+    String sMonitorName
+    String sDescription
+    UInteger uiPortType
+End_Struct
