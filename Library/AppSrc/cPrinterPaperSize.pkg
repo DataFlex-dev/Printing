@@ -1,0 +1,78 @@
+﻿Use cDefaultPrinter.pkg
+Use CreateDC.h.pkg
+Use tPrinterInfo_DevMode.pkg
+
+// GetDeviceCaps() constants
+Define DRIVERVERSION       for 0
+Define TECHNOLOGY          for 2
+Define HORZSIZE            for 4
+Define VERTSIZE            for 6
+Define HORZRES             for 8
+Define VERTRES             for 10
+Define BITSPIXEL           for 12
+Define PLANES              for 14
+Define NUMBRUSHES          for 16
+Define NUMPENS             for 18
+Define NUMMARKERS          for 20
+Define NUMFONTS            for 22
+Define NUMCOLORS           for 24
+Define PDEVICESIZE         for 26
+Define CURVECAPS           for 28
+Define LINECAPS            for 30
+Define POLYGONALCAPS       for 32
+Define TEXTCAPS            for 34
+Define CLIPCAPS            for 36
+Define RASTERCAPS          for 38
+Define ASPECTX             for 40
+Define ASPECTY             for 42
+Define ASPECTXY            for 44
+Define LOGPIXELSX          for 88
+Define LOGPIXELSY          for 90
+Define SIZEPALETTE         for 104
+Define NUMRESERVED         for 106
+Define COLORRES            for 108
+Define PHYSICALWIDTH       for 110
+Define PHYSICALHEIGHT      for 111
+Define PHYSICALOFFSETX     for 112
+Define PHYSICALOFFSETY     for 113
+Define SCALINGFACTORX      for 114
+Define SCALINGFACTORY      for 115
+Define VREFRESH            for 116
+Define DESKTOPVERTRES      for 117
+Define DESKTOPHORZRES      for 118
+Define BLTALIGNMENT        for 119
+Define SHADEBLENDCAPS      for 120
+Define COLORMGMTCAPS       for 121
+
+Class cPrinterPaperSize is a cObject
+    // Returns the size of paper passed as DMPAPER_* constant in millimeters
+    // Passing the printername is optional. When left out the current default printer is used.
+    Function SizeOfPaper Integer ePaperType String sPrinterName Returns tWinSize
+        WString wsPrinterName
+        Handle hoDefaultPrinter hDC
+        tWinSize PaperSize
+        Void_Type iVoid
+        tPrinterInfo_DevMode dm
+        
+        If (num_arguments > 1) Begin
+            Move sPrinterName to wsPrinterName
+        End
+        Else Begin
+            Get Create (RefClass (cDefaultPrinter)) to hoDefaultPrinter
+            Get DefaultPrinter of hoDefaultPrinter to wsPrinterName
+            Send Destroy of hoDefaultPrinter
+        End        
+
+        Move ePaperType to dm.dmPaperSize
+        Move DM_PAPERSIZE to dm.dmFields
+        Move (SizeOfType (tPrinterInfo_DevMode)) to dm.dmSize
+        Move (WinAPI_CreateDC (0, AddressOf (wsPrinterName), 0, AddressOf (dm))) to hDC
+        If (hDC <> 0) Begin
+            Move (GetDeviceCaps (hDC, HORZSIZE)) to PaperSize.cx
+            Move (GetDeviceCaps (hDC, VERTSIZE)) to PaperSize.cy
+            Move (DeleteDC (hDC)) to iVoid
+        End
+        
+        Function_Return PaperSize
+    End_Function
+End_Class
