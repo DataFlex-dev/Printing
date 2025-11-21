@@ -10,4 +10,4 @@ Project0=TestLibrary.Src
 Project1=PrinterReady.src
 [Libraries]
 Lib1=..\Library\Printing.sws
-Lib2=..\..\DateTime\Library\DateTime.sws
+
