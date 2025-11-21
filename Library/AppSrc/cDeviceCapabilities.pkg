@@ -2,7 +2,9 @@
 
 // Documentation: https://msdn.microsoft.com/en-us/library/windows/desktop/dd183552%28v=vs.85%29.aspx
 
+#IFNDEF INVALID_FILE_ATTRIBUTES
 Define INVALID_FILE_ATTRIBUTES for |CV4294967295
+#ENDIF
 
 // bit fields of the return value (DWord) for DC_TRUETYPE
 Define DCTT_BITMAP             for |CI$0000001
@@ -1062,7 +1064,7 @@ Class cDeviceCapabilities is a cObject
 
         Function_Return sPersonalities
     End_Function
-    
+
     Function SupportsColorPrinting Returns Boolean
         WString wsDeviceName wsPort
         Pointer pDevMode
@@ -1090,7 +1092,7 @@ Class cDeviceCapabilities is a cObject
 
         Function_Return iRetval
     End_Function
-    
+
     Function SupportedFields Returns Integer
         WString wsDeviceName wsPort
         Pointer pDevMode
@@ -1102,9 +1104,9 @@ Class cDeviceCapabilities is a cObject
 
         Move (WinAPI_DeviceCapabilities (AddressOf (wsDeviceName), AddressOf (wsPort), DC_FIELDS, 0, pDevMode)) to iRetval
 
-        Function_Return iRetval        
+        Function_Return iRetval
     End_Function
-    
+
     Function SupportsCollating Returns Integer
         WString wsDeviceName wsPort
         Pointer pDevMode
@@ -1118,7 +1120,7 @@ Class cDeviceCapabilities is a cObject
 
         Function_Return iRetval
     End_Function
-    
+
     Function SupportsCopies Returns Integer
         WString wsDeviceName wsPort
         Pointer pDevMode

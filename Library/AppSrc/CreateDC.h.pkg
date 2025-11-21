@@ -1,0 +1,6 @@
+﻿External_Function WinAPI_CreateDC "CreateDCW" GDI32.dll ;
+    Pointer pwszDriver ;
+    Pointer pwszDevice ;
+    Pointer pszPort ;
+    Pointer pdm ;
+    Returns Handle
