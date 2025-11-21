@@ -5,4 +5,4 @@ ConfigFile=.\Programs\Config.ws
 [Conditionals]
 Is$WebApp=False
 [Libraries]
-Lib1=..\Libraries\DateAndTime\DateTime.sws
+Lib1=Libraries\DateAndTime\Library\DateTime.sws
