@@ -4,6 +4,8 @@ Use cDefaultPrinter.pkg
 Use cCJGridColumnRowIndicator.pkg
 Use cCJGridColumn.pkg
 Use cSplitterContainer.pkg
+Use cDeviceCapabilities.pkg
+Use cPrinterPaperSize.pkg
 
 Use cPrintersHandler.pkg
 Use cPrinterDriversHandler.pkg
@@ -132,10 +134,19 @@ Object oEnumPrintersView is a dbView
 
                             Send ShowInfo of oPrinterInfoDialog oPrintersHandler iRow
                         End_Procedure
+
+                        // Instruct the details section to clear the currently listed content
+                        Procedure OnRowChanged Integer iOldRow Integer iNewSelectedRow
+                            Forward Send OnRowChanged iOldRow iNewSelectedRow
+
+                            If (iNewSelectedRow > -1) Begin
+                                Send ClearData of oPrinterDetailsDialog
+                            End
+                        End_Procedure
                     End_Object
 
                     // Makes it possible to scan the windows printers on this machine
-                    Object oScanButton is a Button
+                    Object oScanPrintersButton is a Button
                         Set Size to 14 80
                         Set Location to 21 309
                         Set Label to "Scan printers"
@@ -170,7 +181,7 @@ Object oEnumPrintersView is a dbView
                                 Send Stop_Box "Change to default printer failed"
                             End
                             Else Begin
-                                Send KeyAction of oScanButton
+                                Send KeyAction of oScanPrintersButton
                             End
 
                             Send Destroy of hoDefaultPrinter
@@ -273,6 +284,13 @@ Object oEnumPrintersView is a dbView
                         Set Location to 5 5
                         Set peAnchors to anAll
 
+                        Procedure ClearData
+                            Send EraseGridData of oJobsList
+                            Send EraseGridData of oFormsList
+                            Send EraseGridData of oPortsList
+                            Send EraseGridData of oPaperSizesList
+                        End_Procedure
+
                         Object oJobsTabPage is a TabPage
                             Set Label to "Jobs"
 
@@ -309,6 +327,16 @@ Object oEnumPrintersView is a dbView
                                     Set piWidth to 343
                                     Set psCaption to "Status Description"
                                 End_Object
+
+                                Procedure EraseGridData
+                                    Boolean bIsCreated
+                                    tDataSourceRow[] NoData
+
+                                    Get IsComObjectCreated to bIsCreated
+                                    If (bIsCreated) Begin
+                                        Send InitializeData NoData
+                                    End
+                                End_Procedure
 
                                 // This method lists the jobs for the currently selected printer
                                 Procedure FillJobsList
@@ -357,7 +385,7 @@ Object oEnumPrintersView is a dbView
 
                                     Get SelectedPrinterName of oPrintersList to sPrinterName
                                     Move (sPrinterName <> "") to bEnabled
-                                    Set Enabled_State of oScanButton to bEnabled
+                                    Set Enabled_State of oScanJobsButton to bEnabled
                                     Set Enabled_State of oJobsTypeComboForm to bEnabled
                                     Set Enabled_State of oJobsList to bEnabled
                                 End_Procedure
@@ -386,7 +414,7 @@ Object oEnumPrintersView is a dbView
                                 End_Function
                             End_Object
 
-                            Object oScanButton is a Button
+                            Object oScanJobsButton is a Button
                                 Set Size to 14 65
                                 Set Location to 20 310
                                 Set Label to "Scan Jobs"
@@ -454,6 +482,16 @@ Object oEnumPrintersView is a dbView
                                     Set pbVisible to False
                                 End_Object
 
+                                Procedure EraseGridData
+                                    Boolean bIsCreated
+                                    tDataSourceRow[] NoData
+
+                                    Get IsComObjectCreated to bIsCreated
+                                    If (bIsCreated) Begin
+                                        Send InitializeData NoData
+                                    End
+                                End_Procedure
+
                                 // This method lists the forms for the currently selected printer
                                 Procedure FillFormsList
                                     Integer iFormNameColumnId iFormSizeColumnId iFormImageableAreaColumnId
@@ -501,7 +539,7 @@ Object oEnumPrintersView is a dbView
 
                                     Get SelectedPrinterName of oPrintersList to sPrinterName
                                     Move (sPrinterName <> "") to bEnabled
-                                    Set Enabled_State of oScanButton to bEnabled
+                                    Set Enabled_State of oScanFormsButton to bEnabled
                                     Set Enabled_State of oFormsFilterComboForm to bEnabled
                                     Set Enabled_State of oFormsTypeComboForm to bEnabled
                                     Set Enabled_State of oFormsList to bEnabled
@@ -567,7 +605,7 @@ Object oEnumPrintersView is a dbView
                                 End_Function
                             End_Object
 
-                            Object oScanButton is a Button
+                            Object oScanFormsButton is a Button
                                 Set Size to 14 65
                                 Set Location to 33 309
                                 Set Label to "Scan Forms"
@@ -625,6 +663,16 @@ Object oEnumPrintersView is a dbView
                                     Set pbVisible to False
                                 End_Object
 
+                                Procedure EraseGridData
+                                    Boolean bIsCreated
+                                    tDataSourceRow[] NoData
+
+                                    Get IsComObjectCreated to bIsCreated
+                                    If (bIsCreated) Begin
+                                        Send InitializeData NoData
+                                    End
+                                End_Procedure
+
                                 // This method lists the ports for the currently selected printer
                                 Procedure FillPortsList
                                     Integer eType iPort iPorts
@@ -671,7 +719,7 @@ Object oEnumPrintersView is a dbView
                                     Get SelectedPrinterName of oPrintersList to sPrinterName
                                     Get AllPortsState of oAllPortsComboForm to bAllPorts
                                     Move (sPrinterName <> "" or bAllPorts) to bEnabled
-                                    Set Enabled_State of oScanButton to bEnabled
+                                    Set Enabled_State of oScanPortsButton to bEnabled
                                     Set Enabled_State of oPortsTypeComboForm to bEnabled
                                     Set Enabled_State of oPortsList to bEnabled
                                 End_Procedure
@@ -734,7 +782,7 @@ Object oEnumPrintersView is a dbView
                                 End_Function
                             End_Object
 
-                            Object oScanButton is a Button
+                            Object oScanPortsButton is a Button
                                 Set Size to 14 65
                                 Set Location to 33 310
                                 Set Label to "Scan Ports"
@@ -743,6 +791,100 @@ Object oEnumPrintersView is a dbView
                                 // Starts the Job scan method
                                 Procedure OnClick
                                     Send FillPortsList of oPortsList
+                                End_Procedure
+                            End_Object
+                        End_Object
+
+                        Object oPaperSizeTabPage is a TabPage
+                            Set Label to "PaperSize"
+
+                            Object oPaperSizesList is a cCJGrid
+                                Set Size to 85 300
+                                Set Location to 5 5
+                                Set peAnchors to anAll
+                                Set pbAllowEdit to False
+                                Set pbAllowDeleteRow to False
+                                Set pbAllowAppendRow to False
+                                Set pbAutoAppend to False
+                                Set pbAllowInsertRow to False
+                                Set pbAutoSave to False
+                                Set pbEditOnTyping to False
+                                Set piAlternateRowBackgroundColor to clBtnFace
+                                Set pbUseAlternateRowBackgroundColor to True
+                                Set psNoItemsText to "No PaperSizes Enumerated"
+
+                                Object oRowIndicator is a cCJGridColumnRowIndicator
+                                    Set piWidth to 42
+                                End_Object
+
+                                Object oPaperTypeColumn is a cCJGridColumn
+                                    Set piWidth to 50
+                                    Set psCaption to "Type"
+                                End_Object
+
+                                Object oPaperTypeNameColumn is a cCJGridColumn
+                                    Set piWidth to 100
+                                    Set psCaption to "Name"
+                                End_Object
+
+                                Object oPaperTypeSizeColumn is a cCJGridColumn
+                                    Set piWidth to 100
+                                    Set psCaption to "Size"
+                                End_Object
+
+                                Procedure EraseGridData
+                                    Boolean bIsCreated
+                                    tDataSourceRow[] NoData
+
+                                    Get IsComObjectCreated to bIsCreated
+                                    If (bIsCreated) Begin
+                                        Send InitializeData NoData
+                                    End
+                                End_Procedure
+
+                                Procedure FillPaperSizesList
+                                    String sPrinterName
+                                    Handle hoDeviceCapabilities hoPrinterPaperSize
+                                    tDeviceInfo[] PaperInfos
+                                    Integer iElements iElement iPaperTypeColumnId iPaperTypeNameColumnId iPaperTypeSizeColumnId
+                                    tDataSourceRow[] PaperSizesGridData
+                                    tWinSize PaperSize
+
+                                    Get piColumnId of oPaperTypeColumn to iPaperTypeColumnId
+                                    Get piColumnId of oPaperTypeNameColumn to iPaperTypeNameColumnId
+                                    Get piColumnId of oPaperTypeSizeColumn to iPaperTypeSizeColumnId
+
+                                    Get SelectedPrinterName of oPrintersList to sPrinterName
+                                    Get Create (RefClass (cDeviceCapabilities)) to hoDeviceCapabilities
+                                    Set psDeviceName of hoDeviceCapabilities to sPrinterName
+                                    Get SupportedPapers of hoDeviceCapabilities to PaperInfos
+                                    Send Destroy of hoDeviceCapabilities
+
+                                    Move (SizeOfArray (PaperInfos)) to iElements
+                                    If (iElements > 0) Begin
+                                        Get Create (RefClass (cPrinterPaperSize)) to hoPrinterPaperSize
+                                        Decrement iElements
+                                        For iElement from 0 to iElements
+                                            Move PaperInfos[iElement].iValue to PaperSizesGridData[iElement].sValue[iPaperTypeColumnId]
+                                            Move PaperInfos[iElement].sDescription to PaperSizesGridData[iElement].sValue[iPaperTypeNameColumnId]
+                                            Get SizeOfPaper of hoPrinterPaperSize PaperInfos[iElement].iValue sPrinterName to PaperSize
+                                            Move (SFormat ("%1mm x %2mm", PaperSize.cx, PaperSize.cy)) to PaperSizesGridData[iElement].sValue[iPaperTypeSizeColumnId]
+                                        Loop
+                                    End
+
+                                    Send InitializeData PaperSizesGridData
+                                End_Procedure
+                            End_Object
+
+                            Object oScanPaperSizesButton is a Button
+                                Set Size to 14 65
+                                Set Location to 5 310
+                                Set Label to "Scan PaperSizes"
+                                Set peAnchors to anTopRight
+
+                                // Starts the Job scan method
+                                Procedure OnClick
+                                    Send FillPaperSizesList of oPaperSizesList
                                 End_Procedure
                             End_Object
                         End_Object
@@ -835,7 +977,7 @@ Object oEnumPrintersView is a dbView
                 End_Function
             End_Object
 
-            Object oScanButton Is A Button
+            Object oScanDriversButton is a Button
                 Set Size to 14 80
                 Set Location to 19 310
                 Set Label to "Scan drivers"
