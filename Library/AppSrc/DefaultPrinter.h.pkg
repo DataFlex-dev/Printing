@@ -1,0 +1,8 @@
+﻿External_Function WinAPI_GetDefaultPrinter "GetDefaultPrinterW" Winspool.Drv ;
+    Pointer pszBuffer ;
+    UInteger pcchBuffer ;
+    Returns Boolean
+    
+External_Function WinAPI_SetDefaultPrinter "SetDefaultPrinterW" Winspool.Drv ;
+    Pointer pszBuffer ;
+    Returns Boolean
