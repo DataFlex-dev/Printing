@@ -53,7 +53,7 @@ Class cPrinterPaperSize is a cObject
         tWinSize PaperSize
         Void_Type iVoid
         tPrinterInfo_DevMode dm
-        
+
         If (num_arguments > 1) Begin
             Move sPrinterName to wsPrinterName
         End
@@ -61,18 +61,26 @@ Class cPrinterPaperSize is a cObject
             Get Create (RefClass (cDefaultPrinter)) to hoDefaultPrinter
             Get DefaultPrinter of hoDefaultPrinter to wsPrinterName
             Send Destroy of hoDefaultPrinter
-        End        
-
-        Move ePaperType to dm.dmPaperSize
-        Move DM_PAPERSIZE to dm.dmFields
-        Move (SizeOfType (tPrinterInfo_DevMode)) to dm.dmSize
-        Move (WinAPI_CreateDC (0, AddressOf (wsPrinterName), 0, AddressOf (dm))) to hDC
-        If (hDC <> 0) Begin
-            Move (GetDeviceCaps (hDC, HORZSIZE)) to PaperSize.cx
-            Move (GetDeviceCaps (hDC, VERTSIZE)) to PaperSize.cy
-            Move (DeleteDC (hDC)) to iVoid
         End
         
+        If (wsPrinterName <> "") Begin
+            Move ePaperType to dm.dmPaperSize
+            Move DM_PAPERSIZE to dm.dmFields
+            Move (SizeOfType (tPrinterInfo_DevMode)) to dm.dmSize
+            Move (WinAPI_CreateDC (0, AddressOf (wsPrinterName), 0, AddressOf (dm))) to hDC
+            If (hDC <> 0) Begin
+                Move (GetDeviceCaps (hDC, HORZSIZE)) to PaperSize.cx
+                Move (GetDeviceCaps (hDC, VERTSIZE)) to PaperSize.cy
+                Move (DeleteDC (hDC)) to iVoid
+            End
+            Else Begin
+                Error DFERR_PROGRAM "Printer error detection, no DC"
+            End
+        End
+        Else Begin
+            Error DFERR_PROGRAM "Printer error detection, no Printername"
+        End
+
         Function_Return PaperSize
     End_Function
 End_Class
