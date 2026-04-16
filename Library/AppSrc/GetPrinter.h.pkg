@@ -3,7 +3,6 @@
 External_Function WinAPI_GetPrinter "GetPrinterW" Winspool.drv ;
     Handle  hPrinter ;
     UInteger Level ;
-    Pointer cbBuf ;
     Pointer pPrinter ;
     UInteger cbBuf ;
     Pointer pcbNeeded ;

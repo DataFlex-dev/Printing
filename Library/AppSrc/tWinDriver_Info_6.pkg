@@ -17,7 +17,6 @@ Struct tWinDriver_Info_6
     Pointer pDefaultDataType
     Pointer pszzPreviousNames
     tWinFileTime ftDriverDate 
-    UInteger ___Padding___
     UBigInt dwlDriverVersion 
     Pointer pszMfgName 
     Pointer pszOEMUrl 

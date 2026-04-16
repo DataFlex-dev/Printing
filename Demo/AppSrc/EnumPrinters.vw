@@ -169,12 +169,12 @@ Object oEnumPrintersView is a dbView
                         Procedure OnClick
                             Handle hoDefaultPrinter
                             Boolean bChanged
-                            String sDefaultPrinterName
+                            String sPrinterName
 
                             Get Create (RefClass (cDefaultPrinter)) to hoDefaultPrinter
 
-                            Get Value of oPrintersList to sDefaultPrinterName
-                            Get ChangeDefaultPrinter of hoDefaultPrinter sDefaultPrinterName to bChanged
+                            Get SelectedPrinterName of oPrintersList to sPrinterName
+                            Get ChangeDefaultPrinter of hoDefaultPrinter sPrinterName to bChanged
                             If (not (bChanged)) Begin
                                 Send Stop_Box "Change to default printer failed"
                             End
